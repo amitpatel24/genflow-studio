@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: genflow-studio
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+
+huggingface:
+  api:
+    key: ${HF_API_KEY:your-api-key-here}
+    base-url: https://router.huggingface.co/v1
+  models:
+    chat:
+      id: meta-llama/Llama-3.1-8B-Instruct
+      name: General Chat (Llama 3.1 8B)
+    summarization:
+      id: Qwen/Qwen2.5-7B-Instruct
+      name: Summarization (Qwen 2.5 7B)
+  image:
+    model: black-forest-labs/FLUX.1-schnell
+    name: Image Generator (FLUX)
+  timeout:
+    connect: 10000
+    read: 60000
+
+logging:
+  level:
+    dev.chat: DEBUG
+    org.springframework.web.client: DEBUG
