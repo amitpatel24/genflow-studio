@@ -50,6 +50,13 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- Native DNS resolver for macOS - fixes Netty DNS warning -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver-dns-native-macos</artifactId>
+			<classifier>osx-aarch_64</classifier>
+		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

@@ -126,26 +126,36 @@ public class GroqService {
                 response.bodyToMono(String.class)
                     .flatMap(body -> Mono.error(new AiApiException("Stream error: " + body))))
             .bodyToFlux(String.class)
-            .filter(line -> line.startsWith("data: ") && !line.equals("data: [DONE]"))
-            .map(line -> line.substring(6))
-            .filter(json -> !json.isBlank())
-            .mapNotNull(json -> {
-                try {
-                    JsonNode node = objectMapper.readTree(json);
-                    JsonNode delta = node.path("choices").path(0).path("delta").path("content");
-                    if (!delta.isMissingNode() && !delta.isNull()) {
-                        String content = delta.asText();
-                        fullResponse.append(content);
-                        return content;
+            .flatMap(chunk -> {
+                // Split the chunk by newlines to handle multiple SSE events
+                String[] lines = chunk.split("\n");
+                List<String> tokens = new ArrayList<>();
+                for (String line : lines) {
+                    if (line.startsWith("data: ") && !line.equals("data: [DONE]")) {
+                        String json = line.substring(6).trim();
+                        if (!json.isBlank()) {
+                            try {
+                                JsonNode node = objectMapper.readTree(json);
+                                JsonNode delta = node.path("choices").path(0).path("delta").path("content");
+                                if (!delta.isMissingNode() && !delta.isNull()) {
+                                    String content = delta.asText();
+                                    if (content != null && !content.isEmpty()) {
+                                        fullResponse.append(content);
+                                        tokens.add(content);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                log.trace("Error parsing stream chunk: {}", e.getMessage());
+                            }
+                        }
                     }
-                } catch (Exception e) {
-                    log.trace("Error parsing stream chunk: {}", e.getMessage());
                 }
-                return null;
+                return Flux.fromIterable(tokens);
             })
             .doOnComplete(() -> {
                 if (!fullResponse.isEmpty()) {
                     memoryService.addAssistantMessage(finalSessionId, fullResponse.toString());
+                    log.debug("Streaming completed, total length: {}", fullResponse.length());
                 }
             })
             .doOnError(e -> log.error("Streaming error", e));
