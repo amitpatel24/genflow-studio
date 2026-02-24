@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenFlow Studio</title>
+    <title>GenFlow Studio - Advanced AI Platform</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>⚡</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -19,15 +22,9 @@
         }
     </script>
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .chat-container {
-            height: calc(100vh - 180px);
-        }
-        .message-enter {
-            animation: slideIn 0.3s ease-out;
-        }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .chat-container { height: calc(100vh - 200px); }
+        .message-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -41,22 +38,30 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 3px; }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
         }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: transparent;
+        .streaming-cursor::after {
+            content: '▊';
+            animation: blink 1s infinite;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: rgba(156, 163, 175, 0.5);
-            border-radius: 3px;
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
+        pre code { border-radius: 0.5rem; }
+        .json-viewer { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.875rem; }
+        .mode-badge { font-size: 0.65rem; padding: 0.15rem 0.4rem; }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-72 bg-gray-900 text-white flex flex-col">
+        <aside class="w-80 bg-gray-900 text-white flex flex-col">
             <!-- Logo -->
             <div class="p-4 border-b border-gray-700">
                 <div class="flex items-center gap-3">
@@ -67,7 +72,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-lg">GenFlow Studio</h1>
-                        <p class="text-xs text-gray-400">AI Platform</p>
+                        <p class="text-xs text-gray-400">Advanced AI Platform</p>
                     </div>
                 </div>
             </div>
@@ -82,43 +87,54 @@
                 </button>
             </div>
 
-            <!-- Model Selector -->
+            <!-- AI Mode Selector -->
             <div class="px-4 pb-4">
-                <label class="block text-sm font-medium text-gray-400 mb-2">AI Model</label>
-                <select id="modelSelect" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option th:each="model : ${models}" th:value="${model.id()}" th:text="${model.name()}"></option>
-                    <option value="image-generator">Image Generator (FLUX)</option>
+                <label class="block text-sm font-medium text-gray-400 mb-2">AI Mode</label>
+                <select id="modeSelect" onchange="updateModeHint()" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="chat">💬 Chat</option>
+                    <option value="code">👨‍💻 Code Assistant</option>
+                    <option value="summarize">📝 Summarizer</option>
+                    <option value="enhance-image">🎨 Image Prompt Enhancer</option>
+                    <option value="json">📋 JSON Generator</option>
+                    <option value="function">⚡ Function Calling Demo</option>
                 </select>
-                <p id="modelHint" class="mt-2 text-xs text-gray-500">Select a model for your task</p>
+                <p id="modeHint" class="mt-2 text-xs text-gray-500">Multi-turn conversation with memory</p>
             </div>
 
-            <!-- Image Options (shown when image model selected) -->
-            <div id="imageOptions" class="px-4 pb-4 hidden">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Negative Prompt (optional)</label>
-                <input type="text" id="negativePrompt" placeholder="Things to avoid..." 
-                    class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-primary focus:border-transparent mb-3">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Image Size</label>
-                <select id="imageSize" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="512">512 x 512</option>
-                    <option value="768">768 x 768</option>
-                </select>
+            <!-- Streaming Toggle -->
+            <div class="px-4 pb-4">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="streamToggle" checked class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary">
+                    <span class="text-sm text-gray-300">Enable Streaming</span>
+                </label>
+                <p class="mt-1 text-xs text-gray-500">See responses as they generate</p>
+            </div>
+
+            <!-- Session Info -->
+            <div class="px-4 pb-4">
+                <div class="bg-gray-800 rounded-lg p-3">
+                    <p class="text-xs text-gray-400 mb-1">Session ID</p>
+                    <p id="sessionDisplay" class="text-xs text-gray-300 font-mono truncate">Not started</p>
+                </div>
             </div>
 
             <!-- Chat History -->
             <div class="flex-1 overflow-y-auto scrollbar-thin px-4">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">History</p>
-                <div id="chatHistory" class="space-y-2">
-                    <!-- Chat history items will be added here -->
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">History</p>
+                    <button onclick="clearAllHistory()" class="text-xs text-gray-500 hover:text-red-400 transition-colors">Clear All</button>
                 </div>
+                <div id="chatHistory" class="space-y-2"></div>
             </div>
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-700">
-                <div class="text-xs text-gray-500">
+                <div class="flex items-center justify-between text-xs text-gray-500">
                     <p class="flex items-center gap-2">
                         <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                        API Connected
+                        Groq API Connected
                     </p>
+                    <p id="rateLimitInfo">30 req/min</p>
                 </div>
             </div>
         </aside>
@@ -130,13 +146,23 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 id="chatTitle" class="text-lg font-semibold text-gray-900 dark:text-white">New Conversation</h2>
-                        <p id="chatModelName" class="text-sm text-gray-500 dark:text-gray-400">General Chat (Phi-4)</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span id="modeBadge" class="mode-badge bg-primary text-white rounded-full">Chat</span>
+                            <p id="chatModelName" class="text-sm text-gray-500 dark:text-gray-400">Llama 3.3 70B</p>
+                        </div>
                     </div>
-                    <button onclick="clearChat()" class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleVoice()" id="voiceBtn" class="p-2 text-gray-500 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Voice Input">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                            </svg>
+                        </button>
+                        <button onclick="clearChat()" class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Clear Chat">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -146,29 +172,43 @@
                 <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center">
                     <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">How can I help you today?</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Welcome to GenFlow Studio</h3>
                     <p class="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                        Choose a model from the sidebar: Chat for conversations, or Image Generator for AI art.
+                        Powered by Groq's ultra-fast AI. Choose a mode and start creating.
                     </p>
-                    <div class="grid grid-cols-2 gap-3 max-w-lg">
-                        <button onclick="setExample('Explain quantum computing in simple terms')" class="p-3 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Explain quantum computing</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">in simple terms</p>
+                    <div class="grid grid-cols-3 gap-3 max-w-2xl">
+                        <button onclick="selectModeAndExample('chat', 'Explain how neural networks learn')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">💬</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Chat</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Conversations</p>
                         </button>
-                        <button onclick="setExample('Write a haiku about programming')" class="p-3 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Write a haiku</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">about programming</p>
+                        <button onclick="selectModeAndExample('code', 'Write a Python async web scraper')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">👨‍💻</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Code</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Programming help</p>
                         </button>
-                        <button onclick="selectImageAndSetExample('A futuristic city at sunset, cyberpunk style')" class="p-3 text-left bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors border border-purple-200 dark:border-purple-800">
-                            <p class="text-sm font-medium text-purple-900 dark:text-purple-200">Generate Image</p>
-                            <p class="text-xs text-purple-600 dark:text-purple-400">cyberpunk city</p>
+                        <button onclick="selectModeAndExample('summarize', 'Paste a long article to summarize')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">📝</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Summarize</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Condense text</p>
                         </button>
-                        <button onclick="selectImageAndSetExample('A cute robot reading a book in a cozy library')" class="p-3 text-left bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors border border-purple-200 dark:border-purple-800">
-                            <p class="text-sm font-medium text-purple-900 dark:text-purple-200">Generate Image</p>
-                            <p class="text-xs text-purple-600 dark:text-purple-400">cute robot reading</p>
+                        <button onclick="selectModeAndExample('enhance-image', 'A cat sitting on a windowsill')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">🎨</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Image Prompts</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Enhance for SD</p>
+                        </button>
+                        <button onclick="selectModeAndExample('json', 'Generate a user profile for John Doe')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">📋</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">JSON</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Structured data</p>
+                        </button>
+                        <button onclick="selectModeAndExample('function', 'What is the weather in Tokyo?')" class="p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <span class="text-2xl mb-2 block">⚡</span>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Functions</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Tool calling</p>
                         </button>
                     </div>
                 </div>
@@ -182,22 +222,20 @@
                             id="messageInput" 
                             rows="1"
                             placeholder="Type your message..."
-                            class="w-full resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-3 pr-12 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+                            class="w-full resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-3 pr-24 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
                             onkeydown="handleKeyDown(event)"
                         ></textarea>
-                        <button 
-                            type="submit" 
-                            id="sendButton"
-                            class="absolute right-2 bottom-2 p-2 text-white bg-primary hover:bg-indigo-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                            </svg>
-                        </button>
+                        <div class="absolute right-2 bottom-2 flex gap-1">
+                            <button type="submit" id="sendButton" class="p-2 text-white bg-primary hover:bg-indigo-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </form>
                 <p class="mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
-                    Press Enter to send, Shift+Enter for new line
+                    Press Enter to send | <span id="statusText" class="text-primary">Ready</span>
                 </p>
             </div>
         </main>
@@ -205,75 +243,83 @@
 
     <script>
         // State
+        let sessionId = null;
         let chatHistory = [];
-        let currentChatId = null;
         let isLoading = false;
+        let currentStreamController = null;
+        let recognition = null;
+        let isListening = false;
 
         // DOM Elements
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
-        const modelSelect = document.getElementById('modelSelect');
-        const modelHint = document.getElementById('modelHint');
-        const chatTitle = document.getElementById('chatTitle');
-        const chatModelName = document.getElementById('chatModelName');
-        const welcomeMessage = document.getElementById('welcomeMessage');
+        const modeSelect = document.getElementById('modeSelect');
+        const streamToggle = document.getElementById('streamToggle');
         const sendButton = document.getElementById('sendButton');
-        const historyContainer = document.getElementById('chatHistory');
+        const statusText = document.getElementById('statusText');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const sessionDisplay = document.getElementById('sessionDisplay');
+        const modeBadge = document.getElementById('modeBadge');
+
+        // Mode configurations
+        const modeConfig = {
+            'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', streaming: true, placeholder: 'Type your message...' },
+            'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe what code you need...' },
+            'summarize': { name: 'Summarize', endpoint: '/api/summarize', model: 'Mixtral 8x7B', streaming: false, placeholder: 'Paste text to summarize...' },
+            'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', streaming: false, placeholder: 'Enter a basic image description...' },
+            'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe the JSON you need...' },
+            'function': { name: 'Function', endpoint: '/api/function', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Ask something that might need a tool...' }
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadHistory();
-            updateModelHint();
-            modelSelect.addEventListener('change', updateModelHint);
+            updateModeHint();
+            initVoiceRecognition();
+            createSession();
             autoResizeTextarea();
         });
 
-        function updateModelHint() {
-            const selectedOption = modelSelect.options[modelSelect.selectedIndex];
-            const modelName = selectedOption.text;
-            chatModelName.textContent = modelName;
-            
-            const imageOptions = document.getElementById('imageOptions');
-            const isImageModel = modelSelect.value === 'image-generator';
-            
-            if (isImageModel) {
-                modelHint.textContent = 'Generate images from text descriptions';
-                imageOptions.classList.remove('hidden');
-                messageInput.placeholder = 'Describe the image you want to generate...';
-            } else if (modelSelect.value.includes('Qwen')) {
-                modelHint.textContent = 'Best for summarizing long text';
-                imageOptions.classList.add('hidden');
-                messageInput.placeholder = 'Type your message...';
-            } else {
-                modelHint.textContent = 'Best for general conversations';
-                imageOptions.classList.add('hidden');
-                messageInput.placeholder = 'Type your message...';
+        async function createSession() {
+            try {
+                const response = await fetch('/api/session', { method: 'POST' });
+                const data = await response.json();
+                sessionId = data.sessionId;
+                sessionDisplay.textContent = sessionId.substring(0, 8) + '...';
+            } catch (e) {
+                console.error('Failed to create session:', e);
             }
         }
 
-        function autoResizeTextarea() {
-            messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-            });
+        function updateModeHint() {
+            const mode = modeSelect.value;
+            const config = modeConfig[mode];
+            
+            document.getElementById('modeHint').textContent = getHintForMode(mode);
+            document.getElementById('chatModelName').textContent = config.model;
+            modeBadge.textContent = config.name;
+            messageInput.placeholder = config.placeholder;
+            
+            // Show/hide streaming toggle based on mode
+            streamToggle.parentElement.parentElement.style.display = config.streaming ? 'block' : 'none';
         }
 
-        function handleKeyDown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage(event);
-            }
+        function getHintForMode(mode) {
+            const hints = {
+                'chat': 'Multi-turn conversation with memory',
+                'code': 'Expert programming assistance',
+                'summarize': 'Condense long text concisely',
+                'enhance-image': 'Enhance prompts for image generation',
+                'json': 'Generate structured JSON data',
+                'function': 'Demonstrate AI tool calling'
+            };
+            return hints[mode] || '';
         }
 
-        function setExample(text) {
-            messageInput.value = text;
-            messageInput.focus();
-        }
-
-        function selectImageAndSetExample(text) {
-            modelSelect.value = 'image-generator';
-            updateModelHint();
-            messageInput.value = text;
+        function selectModeAndExample(mode, example) {
+            modeSelect.value = mode;
+            updateModeHint();
+            messageInput.value = example;
             messageInput.focus();
         }
 
@@ -283,13 +329,12 @@
             const message = messageInput.value.trim();
             if (!message || isLoading) return;
 
-            const model = modelSelect.value;
-            const isImageGeneration = model === 'image-generator';
+            const mode = modeSelect.value;
+            const config = modeConfig[mode];
+            const useStreaming = config.streaming && streamToggle.checked;
             
             // Hide welcome message
-            if (welcomeMessage) {
-                welcomeMessage.style.display = 'none';
-            }
+            if (welcomeMessage) welcomeMessage.style.display = 'none';
 
             // Add user message
             addMessage(message, 'user');
@@ -298,159 +343,151 @@
 
             // Show loading
             setLoading(true);
-            const loadingId = isImageGeneration ? showImageLoadingIndicator() : showTypingIndicator();
 
             try {
-                if (isImageGeneration) {
-                    await generateImage(message, loadingId);
+                if (useStreaming) {
+                    await sendStreamingMessage(message);
                 } else {
-                    await sendChatMessage(message, model, loadingId);
+                    await sendStandardMessage(message, config.endpoint);
                 }
             } catch (error) {
-                removeTypingIndicator(loadingId);
-                addMessage('Network error. Please check your connection and try again.', 'error');
-                console.error('Error:', error);
+                addMessage('Error: ' + error.message, 'error');
             } finally {
                 setLoading(false);
             }
         }
 
-        async function sendChatMessage(message, model, loadingId) {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message, model }),
-            });
-
-            const data = await response.json();
+        async function sendStreamingMessage(message) {
+            const streamingDiv = addMessage('', 'assistant', true);
+            const contentDiv = streamingDiv.querySelector('.message-content');
             
-            // Remove typing indicator
-            removeTypingIndicator(loadingId);
-
-            if (data.success) {
-                addMessage(data.message, 'assistant');
-                updateChatTitle(message);
-                saveToHistory(message, data.message, model);
-            } else {
-                addMessage(data.error || 'An error occurred. Please try again.', 'error');
-            }
-        }
-
-        async function generateImage(prompt, loadingId) {
-            const negativePrompt = document.getElementById('negativePrompt').value.trim();
-            const imageSize = parseInt(document.getElementById('imageSize').value);
-
+            const url = `/api/chat/stream?message=${encodeURIComponent(message)}&sessionId=${sessionId || ''}`;
+            
             try {
-                const response = await fetch('/api/image', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        prompt: prompt,
-                        negativePrompt: negativePrompt || null,
-                        width: imageSize,
-                        height: imageSize
-                    }),
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Accept': 'text/event-stream' }
                 });
 
-                removeTypingIndicator(loadingId);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullContent = '';
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    let errorMessage = 'Failed to generate image.';
-                    
-                    if (response.status === 503) {
-                        errorMessage = 'Model is loading. Please wait a few seconds and try again.';
-                    } else if (response.status === 429) {
-                        errorMessage = 'Rate limit exceeded. Please wait a moment.';
-                    } else {
-                        try {
-                            const errorJson = JSON.parse(errorText);
-                            errorMessage = errorJson.error || errorMessage;
-                        } catch (e) {
-                            // Use default error message
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.substring(6);
+                            if (data === '[DONE]') continue;
+                            
+                            const token = data.replace(/\\n/g, '\n');
+                            fullContent += token;
+                            contentDiv.innerHTML = formatMessage(fullContent);
+                            contentDiv.classList.add('streaming-cursor');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
                         }
                     }
-                    
-                    addMessage(errorMessage, 'error');
-                    return;
                 }
 
-                const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
-                addImageMessage(imageUrl, prompt);
-                updateChatTitle('Image: ' + prompt);
-                
+                contentDiv.classList.remove('streaming-cursor');
+                contentDiv.innerHTML = formatMessage(fullContent);
+                highlightCodeBlocks();
+                updateChatTitle(message);
+                saveToHistory(message, fullContent, 'chat');
+
             } catch (error) {
-                removeTypingIndicator(loadingId);
-                console.error('Image generation error:', error);
-                addMessage('Failed to generate image. Please try again.', 'error');
+                contentDiv.innerHTML = 'Stream error: ' + error.message;
+                contentDiv.classList.remove('streaming-cursor');
             }
         }
 
-        function addImageMessage(imageUrl, prompt) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex gap-4 message-enter';
-            
-            messageDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-                <div class="flex-1 bg-gray-50 dark:bg-gray-700 rounded-2xl px-4 py-3">
-                    <img src="${imageUrl}" alt="${escapeHtml(prompt)}" 
-                        class="max-w-full rounded-lg shadow-lg mb-3" 
-                        style="max-height: 512px;">
-                    <div class="flex items-center gap-3">
-                        <a href="${imageUrl}" download="generated-image.png" 
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            Download
-                        </a>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                            Generated image
-                        </span>
-                    </div>
-                </div>
-            `;
+        async function sendStandardMessage(message, endpoint) {
+            const loadingId = showTypingIndicator();
 
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, sessionId })
+                });
+
+                const data = await response.json();
+                removeTypingIndicator(loadingId);
+
+                if (data.success) {
+                    const mode = modeSelect.value;
+                    let content = data.message;
+                    
+                    // Handle special response formats
+                    if (mode === 'code' && data.codeBlocks) {
+                        content = formatCodeResponse(data);
+                    } else if (mode === 'json' && data.data) {
+                        content = formatJsonResponse(data.data);
+                    } else if (data.data && Array.isArray(data.data)) {
+                        content = formatFunctionCallResponse(data.data);
+                    }
+                    
+                    addMessage(content, 'assistant');
+                    updateChatTitle(message);
+                    saveToHistory(message, content, mode);
+                } else {
+                    addMessage(data.error || 'An error occurred', 'error');
+                }
+            } catch (error) {
+                removeTypingIndicator(loadingId);
+                throw error;
+            }
         }
 
-        function showImageLoadingIndicator() {
-            const id = 'typing-' + Date.now();
-            const div = document.createElement('div');
-            div.id = id;
-            div.className = 'flex gap-4 message-enter';
-            div.innerHTML = `
-                <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-2xl px-4 py-3">
-                    <div class="flex items-center gap-3">
-                        <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span class="text-sm text-gray-600 dark:text-gray-300">Generating image... This may take 15-30 seconds</span>
-                    </div>
-                </div>
-            `;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            return id;
+        function formatCodeResponse(data) {
+            let html = '';
+            if (data.explanation) {
+                html += `<p class="mb-4">${escapeHtml(data.explanation)}</p>`;
+            }
+            if (data.codeBlocks) {
+                data.codeBlocks.forEach(block => {
+                    html += `<pre><code class="language-${block.language}">${escapeHtml(block.code)}</code></pre>`;
+                });
+            }
+            return html;
         }
 
-        function addMessage(content, type) {
+        function formatJsonResponse(data) {
+            const formatted = JSON.stringify(data, null, 2);
+            return `<div class="json-viewer bg-gray-900 p-4 rounded-lg overflow-x-auto"><pre><code class="language-json">${escapeHtml(formatted)}</code></pre></div>`;
+        }
+
+        function formatFunctionCallResponse(toolCalls) {
+            let html = '<div class="space-y-2">';
+            html += '<p class="font-medium text-primary">Function calls detected:</p>';
+            toolCalls.forEach(call => {
+                html += `<div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    <p class="font-mono text-sm"><span class="text-purple-500">function:</span> ${call.function?.name || 'unknown'}</p>
+                    <p class="font-mono text-sm text-gray-600 dark:text-gray-400">${call.function?.arguments || '{}'}</p>
+                </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function formatMessage(content) {
+            // Convert markdown-style code blocks
+            content = content.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+                return `<pre><code class="language-${lang || 'plaintext'}">${escapeHtml(code.trim())}</code></pre>`;
+            });
+            // Convert inline code
+            content = content.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">$1</code>');
+            // Convert newlines
+            content = content.replace(/\n/g, '<br>');
+            return content;
+        }
+
+        function addMessage(content, type, isStreaming = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'flex gap-4 message-enter';
             
@@ -465,10 +502,7 @@
                    </div>`
                 : `<div class="w-8 h-8 rounded-full ${isError ? 'bg-red-500' : 'gradient-bg'} flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        ${isError 
-                            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>'
-                            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>'
-                        }
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                    </div>`;
 
@@ -478,15 +512,27 @@
                     ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
                     : 'bg-gray-50 dark:bg-gray-700';
 
+            const formattedContent = isUser ? escapeHtml(content) : (isStreaming ? '' : formatMessage(content));
+
             messageDiv.innerHTML = `
                 ${avatar}
-                <div class="flex-1 ${bgClass} rounded-2xl px-4 py-3">
-                    <p class="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${escapeHtml(content)}</p>
+                <div class="flex-1 ${bgClass} rounded-2xl px-4 py-3 overflow-hidden">
+                    <div class="message-content prose dark:prose-invert max-w-none">${formattedContent}</div>
                 </div>
             `;
 
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            if (!isStreaming) highlightCodeBlocks();
+            
+            return messageDiv;
+        }
+
+        function highlightCodeBlocks() {
+            document.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
         }
 
         function showTypingIndicator() {
@@ -497,7 +543,7 @@
             div.innerHTML = `
                 <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-2xl px-4 py-3">
@@ -515,20 +561,14 @@
 
         function removeTypingIndicator(id) {
             const element = document.getElementById(id);
-            if (element) {
-                element.remove();
-            }
+            if (element) element.remove();
         }
 
         function setLoading(loading) {
             isLoading = loading;
             sendButton.disabled = loading;
             messageInput.disabled = loading;
-        }
-
-        function updateChatTitle(message) {
-            const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-            chatTitle.textContent = title;
+            statusText.textContent = loading ? 'Processing...' : 'Ready';
         }
 
         function escapeHtml(text) {
@@ -537,71 +577,58 @@
             return div.innerHTML;
         }
 
+        function autoResizeTextarea() {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            });
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage(event);
+            }
+        }
+
+        function updateChatTitle(message) {
+            const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+            document.getElementById('chatTitle').textContent = title;
+        }
+
         function newChat() {
-            currentChatId = null;
-            chatTitle.textContent = 'New Conversation';
+            document.getElementById('chatTitle').textContent = 'New Conversation';
             chatMessages.innerHTML = '';
+            createSession();
             
-            // Restore welcome message
-            chatMessages.innerHTML = `
+            // Restore welcome
+            chatMessages.innerHTML = document.getElementById('welcomeMessage') ? '' : `
                 <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center">
                     <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">How can I help you today?</h3>
-                    <p class="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                        Choose a model from the sidebar: Chat for conversations, or Image Generator for AI art.
-                    </p>
-                    <div class="grid grid-cols-2 gap-3 max-w-lg">
-                        <button onclick="setExample('Explain quantum computing in simple terms')" class="p-3 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Explain quantum computing</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">in simple terms</p>
-                        </button>
-                        <button onclick="setExample('Write a haiku about programming')" class="p-3 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Write a haiku</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">about programming</p>
-                        </button>
-                        <button onclick="selectImageAndSetExample('A futuristic city at sunset, cyberpunk style')" class="p-3 text-left bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors border border-purple-200 dark:border-purple-800">
-                            <p class="text-sm font-medium text-purple-900 dark:text-purple-200">Generate Image</p>
-                            <p class="text-xs text-purple-600 dark:text-purple-400">cyberpunk city</p>
-                        </button>
-                        <button onclick="selectImageAndSetExample('A cute robot reading a book in a cozy library')" class="p-3 text-left bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors border border-purple-200 dark:border-purple-800">
-                            <p class="text-sm font-medium text-purple-900 dark:text-purple-200">Generate Image</p>
-                            <p class="text-xs text-purple-600 dark:text-purple-400">cute robot reading</p>
-                        </button>
-                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Start a new conversation</h3>
+                    <p class="text-gray-500">Select a mode and type your message</p>
                 </div>
             `;
         }
 
         function clearChat() {
-            chatMessages.innerHTML = '';
-            chatTitle.textContent = 'New Conversation';
             newChat();
         }
 
-        function saveToHistory(userMessage, aiResponse, model) {
-            const chatId = currentChatId || Date.now().toString();
-            currentChatId = chatId;
-            
-            const historyItem = {
-                id: chatId,
-                title: userMessage.length > 25 ? userMessage.substring(0, 25) + '...' : userMessage,
-                model: model,
+        // History management
+        function saveToHistory(userMessage, aiResponse, mode) {
+            const item = {
+                id: Date.now().toString(),
+                title: userMessage.substring(0, 25) + (userMessage.length > 25 ? '...' : ''),
+                mode,
                 timestamp: new Date().toISOString()
             };
-
-            // Update or add to history
-            const existingIndex = chatHistory.findIndex(h => h.id === chatId);
-            if (existingIndex >= 0) {
-                chatHistory[existingIndex] = historyItem;
-            } else {
-                chatHistory.unshift(historyItem);
-                if (chatHistory.length > 10) chatHistory.pop();
-            }
-
+            chatHistory.unshift(item);
+            if (chatHistory.length > 10) chatHistory.pop();
             localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
             renderHistory();
         }
@@ -616,20 +643,71 @@
         }
 
         function renderHistory() {
-            historyContainer.innerHTML = chatHistory.map(chat => `
-                <button onclick="loadChat('${chat.id}')" class="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors group">
-                    <p class="text-sm text-gray-300 truncate">${escapeHtml(chat.title)}</p>
-                    <p class="text-xs text-gray-500 mt-1">${new Date(chat.timestamp).toLocaleDateString()}</p>
-                </button>
+            const container = document.getElementById('chatHistory');
+            container.innerHTML = chatHistory.map(chat => `
+                <div class="group relative">
+                    <button onclick="loadChat('${chat.id}')" class="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors pr-8">
+                        <p class="text-sm text-gray-300 truncate">${escapeHtml(chat.title)}</p>
+                        <p class="text-xs text-gray-500 mt-1">${chat.mode} • ${new Date(chat.timestamp).toLocaleDateString()}</p>
+                    </button>
+                    <button onclick="deleteHistoryItem('${chat.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
             `).join('');
         }
 
-        function loadChat(chatId) {
-            // In a full implementation, this would load the chat from storage
-            currentChatId = chatId;
-            const chat = chatHistory.find(h => h.id === chatId);
-            if (chat) {
-                chatTitle.textContent = chat.title;
+        function deleteHistoryItem(id) {
+            chatHistory = chatHistory.filter(c => c.id !== id);
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            renderHistory();
+        }
+
+        function clearAllHistory() {
+            chatHistory = [];
+            localStorage.removeItem('chatHistory');
+            renderHistory();
+        }
+
+        function loadChat(id) {
+            // In full implementation, would load from backend
+            console.log('Loading chat:', id);
+        }
+
+        // Voice recognition
+        function initVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                messageInput.value = transcript;
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('voiceBtn').classList.remove('text-red-500');
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) return;
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+                isListening = true;
+                document.getElementById('voiceBtn').classList.add('text-red-500');
             }
         }
     </script>

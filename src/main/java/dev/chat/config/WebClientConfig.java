@@ -13,20 +13,20 @@ import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
 
 /**
- * Configuration for WebClient used to communicate with Hugging Face API.
+ * Configuration for WebClient used to communicate with Groq API.
  */
 @Configuration
-@EnableConfigurationProperties(HuggingFaceConfig.class)
+@EnableConfigurationProperties(GroqConfig.class)
 public class WebClientConfig {
 
-    private final HuggingFaceConfig config;
+    private final GroqConfig config;
 
-    public WebClientConfig(HuggingFaceConfig config) {
+    public WebClientConfig(GroqConfig config) {
         this.config = config;
     }
 
     @Bean
-    public WebClient huggingFaceWebClient() {
+    public WebClient groqWebClient() {
         HttpClient httpClient = HttpClient.create()
             .responseTimeout(Duration.ofMillis(config.timeout().read()));
 

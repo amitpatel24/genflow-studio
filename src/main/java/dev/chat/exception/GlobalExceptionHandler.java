@@ -1,6 +1,6 @@
 package dev.chat.exception;
 
-import dev.chat.dto.ChatResponse;
+import dev.chat.dto.AiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
@@ -21,9 +23,9 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(HuggingFaceException.class)
-    public ResponseEntity<ChatResponse> handleHuggingFaceException(HuggingFaceException ex) {
-        log.error("Hugging Face API error: {} (Type: {}, Status: {})", 
+    @ExceptionHandler(AiApiException.class)
+    public ResponseEntity<AiResponse> handleAiApiException(AiApiException ex) {
+        log.error("AI API error: {} (Type: {}, Status: {})", 
             ex.getMessage(), ex.getErrorType(), ex.getStatusCode());
         
         HttpStatus status = switch (ex.getStatusCode()) {
@@ -34,39 +36,39 @@ public class GlobalExceptionHandler {
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
 
-        return ResponseEntity.status(status).body(ChatResponse.error(ex.getMessage()));
+        return ResponseEntity.status(status).body(AiResponse.error(ex.getMessage()));
     }
 
     @ExceptionHandler(WebClientResponseException.TooManyRequests.class)
-    public ResponseEntity<ChatResponse> handleRateLimitException(WebClientResponseException.TooManyRequests ex) {
+    public ResponseEntity<AiResponse> handleRateLimitException(WebClientResponseException.TooManyRequests ex) {
         log.warn("Rate limit exceeded: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-            .body(ChatResponse.error("Rate limit exceeded. Please wait a moment and try again."));
+            .body(AiResponse.error("Rate limit exceeded. Please wait a moment and try again."));
     }
 
     @ExceptionHandler({TimeoutException.class, SocketTimeoutException.class})
-    public ResponseEntity<ChatResponse> handleTimeoutException(Exception ex) {
+    public ResponseEntity<AiResponse> handleTimeoutException(Exception ex) {
         log.error("Request timeout: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
-            .body(ChatResponse.error("The request timed out. The model might be loading, please try again."));
+            .body(AiResponse.error("The request timed out. The model might be loading, please try again."));
     }
 
     @ExceptionHandler(WebClientRequestException.class)
-    public ResponseEntity<ChatResponse> handleWebClientRequestException(WebClientRequestException ex) {
-        log.error("Network error communicating with Hugging Face: {}", ex.getMessage());
+    public ResponseEntity<AiResponse> handleWebClientRequestException(WebClientRequestException ex) {
+        log.error("Network error communicating with AI service: {}", ex.getMessage());
         
         if (ex.getCause() instanceof SocketTimeoutException) {
             return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
-                .body(ChatResponse.error("Connection timed out. Please try again."));
+                .body(AiResponse.error("Connection timed out. Please try again."));
         }
         
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-            .body(ChatResponse.error("Unable to connect to the AI service. Please try again later."));
+            .body(AiResponse.error("Unable to connect to the AI service. Please try again later."));
     }
 
     @ExceptionHandler(WebClientResponseException.class)
-    public ResponseEntity<ChatResponse> handleWebClientResponseException(WebClientResponseException ex) {
-        log.error("Hugging Face API response error: {} - {}", ex.getStatusCode(), ex.getMessage());
+    public ResponseEntity<AiResponse> handleWebClientResponseException(WebClientResponseException ex) {
+        log.error("AI API response error: {} - {}", ex.getStatusCode(), ex.getMessage());
         
         String message = switch (ex.getStatusCode().value()) {
             case 401 -> "Invalid API key. Please check your configuration.";
@@ -77,20 +79,30 @@ public class GlobalExceptionHandler {
         };
 
         return ResponseEntity.status(ex.getStatusCode())
-            .body(ChatResponse.error(message));
+            .body(AiResponse.error(message));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ChatResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<AiResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Invalid request: {}", ex.getMessage());
         return ResponseEntity.badRequest()
-            .body(ChatResponse.error(ex.getMessage()));
+            .body(AiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException ex) {
+        // Silently ignore favicon.ico requests
+        if (ex.getResourcePath().contains("favicon")) {
+            return ResponseEntity.notFound().build();
+        }
+        log.warn("Resource not found: {}", ex.getResourcePath());
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ChatResponse> handleGenericException(Exception ex) {
+    public ResponseEntity<AiResponse> handleGenericException(Exception ex) {
         log.error("Unexpected error: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ChatResponse.error("An unexpected error occurred. Please try again."));
+            .body(AiResponse.error("An unexpected error occurred. Please try again."));
     }
 }

@@ -9,23 +9,17 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
-huggingface:
+groq:
   api:
-    key: ${HF_API_KEY:your-api-key-here}
-    base-url: https://router.huggingface.co/v1
+    key: ${GROQ_API_KEY:your-groq-api-key}
+    base-url: https://api.groq.com/openai/v1
   models:
-    chat:
-      id: meta-llama/Llama-3.1-8B-Instruct
-      name: General Chat (Llama 3.1 8B)
-    summarization:
-      id: Qwen/Qwen2.5-7B-Instruct
-      name: Summarization (Qwen 2.5 7B)
-  image:
-    model: black-forest-labs/FLUX.1-schnell
-    name: Image Generator (FLUX)
+    versatile: llama-3.3-70b-versatile
+    fast: llama-3.1-8b-instant
+    mixtral: mixtral-8x7b-32768
   timeout:
     connect: 10000
-    read: 60000
+    read: 120000
 
 logging:
   level:
