@@ -50,6 +50,12 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- Health check and monitoring -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<!-- Native DNS resolver for macOS - fixes Netty DNS warning -->
 		<dependency>
 			<groupId>io.netty</groupId>

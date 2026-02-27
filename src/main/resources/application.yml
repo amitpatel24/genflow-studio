@@ -23,5 +23,15 @@ groq:
 
 logging:
   level:
-    dev.chat: DEBUG
-    org.springframework.web.client: DEBUG
+    dev.chat: INFO
+    org.springframework.web.client: WARN
+    org.springframework.web.reactive: WARN
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenFlow Studio - Advanced AI Platform</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>⚡</text></svg>">
+    <title>GenFlow Studio - AI Powered Creativity</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%238B5CF6'/><stop offset='100%25' style='stop-color:%23EC4899'/></linearGradient></defs><rect fill='url(%23g)' rx='20' width='100' height='100'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white'>✦</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
@@ -13,27 +16,129 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+                    },
                     colors: {
-                        primary: '#6366f1',
-                        secondary: '#8b5cf6',
+                        primary: { 50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd', 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6', 900: '#4c1d95' },
+                        accent: { 400: '#f472b6', 500: '#ec4899', 600: '#db2777' },
                     }
                 }
             }
         }
     </script>
     <style>
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .chat-container { height: calc(100vh - 200px); }
-        @media (max-width: 768px) {
-            .chat-container { height: calc(100vh - 180px); }
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* Animated gradient background */
+        .main-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            overflow: hidden;
         }
-        .message-enter { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .main-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+            animation: aurora 20s ease-in-out infinite;
         }
+        @keyframes aurora {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 2%) rotate(1deg); }
+            50% { transform: translate(-1%, 3%) rotate(-1deg); }
+            75% { transform: translate(3%, -2%) rotate(2deg); }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glowing button */
+        .glow-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+        .glow-btn:hover {
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.6);
+            transform: translateY(-1px);
+        }
+        .glow-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Sidebar styling */
+        .sidebar-glass {
+            background: linear-gradient(180deg, rgba(15, 15, 35, 0.95) 0%, rgba(26, 26, 46, 0.98) 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        /* Custom scrollbar */
+        .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5));
+            border-radius: 10px;
+        }
+        
+        /* Animations */
+        .message-enter { animation: messageSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(236, 72, 153, 0.3); }
+        }
+        
         .typing-indicator span {
             animation: bounce 1.4s infinite ease-in-out both;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
         }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
@@ -41,59 +146,63 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
-        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 3px; }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 1; }
-            100% { transform: scale(1.4); opacity: 0; }
-        }
+        
         .streaming-cursor::after {
             content: '▊';
+            color: #8b5cf6;
             animation: blink 1s infinite;
         }
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
         }
-        pre code { border-radius: 0.5rem; }
-        .json-viewer { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.875rem; }
-        .mode-badge { font-size: 0.65rem; padding: 0.15rem 0.4rem; }
         
-        /* Range slider styling */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
+        /* Input styling */
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), 0 0 20px rgba(139, 92, 246, 0.1);
         }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 14px;
-            width: 14px;
-            border-radius: 50%;
-            background: #6366f1;
-            cursor: pointer;
-            margin-top: -5px;
+        
+        /* Mode cards */
+        .mode-card {
+            position: relative;
+            overflow: hidden;
         }
-        input[type="range"]::-webkit-slider-runnable-track {
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            height: 4px;
-            background: #374151;
-            border-radius: 2px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        .mode-card:hover::before {
+            left: 100%;
+        }
+        
+        /* Status indicator */
+        .status-dot {
+            position: relative;
+        }
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        @keyframes statusPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
         }
         
         /* Mobile sidebar */
-        .sidebar-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -101,37 +210,115 @@
                 top: 0;
                 z-index: 50;
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .sidebar.open {
-                transform: translateX(0);
-            }
+            .sidebar.open { transform: translateX(0); }
+        }
+        .sidebar-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        
+        /* Range slider */
+        input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            height: 16px; width: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4);
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        
+        pre code { border-radius: 0.75rem; }
+        .json-viewer { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.875rem; }
+        
+        /* Toast animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        
+        /* Code block with copy button */
+        pre {
+            position: relative;
+        }
+        pre:hover .code-copy-btn {
+            opacity: 1;
+        }
+        .code-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        /* Orbs decoration */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .orb-1 {
+            width: 300px; height: 300px;
+            background: rgba(139, 92, 246, 0.3);
+            top: 10%; right: 10%;
+            animation: orbFloat1 15s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 200px; height: 200px;
+            background: rgba(236, 72, 153, 0.25);
+            bottom: 20%; left: 5%;
+            animation: orbFloat2 12s ease-in-out infinite;
+        }
+        @keyframes orbFloat1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 20px); }
+        }
+        @keyframes orbFloat2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -30px); }
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+<body class="main-bg min-h-screen text-white">
+    <!-- Decorative orbs -->
+    <div class="orb orb-1 hidden md:block"></div>
+    <div class="orb orb-2 hidden md:block"></div>
+    
     <!-- Mobile sidebar overlay -->
     <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 z-40 md:hidden" onclick="toggleSidebar()"></div>
     
-    <div class="flex h-screen">
+    <div class="flex h-screen relative z-10">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar w-72 md:w-80 bg-gray-900 text-white flex flex-col h-full">
+        <aside id="sidebar" class="sidebar sidebar-glass w-72 md:w-80 flex flex-col h-full">
             <!-- Logo -->
-            <div class="p-3 md:p-4 border-b border-gray-700">
+            <div class="p-4 md:p-5 border-b border-white/5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 md:w-10 md:h-10 rounded-lg gradient-bg flex items-center justify-center">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                            </svg>
+                        <div class="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center pulse-glow">
+                            <span class="text-xl">✦</span>
                         </div>
                         <div>
-                            <h1 class="font-bold text-base md:text-lg">GenFlow Studio</h1>
-                            <p class="text-xs text-gray-400">Advanced AI Platform</p>
+                            <h1 class="font-display font-bold text-lg gradient-text">GenFlow Studio</h1>
+                            <p class="text-[11px] text-gray-500">AI-Powered Creativity</p>
                         </div>
                     </div>
-                    <!-- Close button for mobile -->
-                    <button onclick="toggleSidebar()" class="md:hidden p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800">
+                    <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -140,136 +327,124 @@
             </div>
 
             <!-- New Chat Button -->
-            <div class="p-3 md:p-4">
-                <button onclick="newChat()" class="w-full py-2 md:py-2.5 px-3 md:px-4 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 text-sm md:text-base">
-                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-4">
+                <button onclick="newChat()" class="w-full py-3 px-4 rounded-xl glow-btn text-white font-medium flex items-center justify-center gap-2 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    New Chat
+                    New Conversation
                 </button>
             </div>
 
             <!-- AI Mode Selector -->
-            <div class="px-3 md:px-4 pb-3 md:pb-4">
-                <label class="block text-xs md:text-sm font-medium text-gray-400 mb-1.5 md:mb-2">AI Mode</label>
-                <select id="modeSelect" onchange="updateModeHint(); closeSidebarOnMobile();" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-2.5 md:px-3 py-2 md:py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="chat">💬 Chat</option>
-                    <option value="code">👨‍💻 Code Assistant</option>
-                    <option value="summarize">📝 Summarizer</option>
-                    <option value="enhance-image">🎨 Image Prompt Enhancer</option>
-                    <option value="json">📋 JSON Generator</option>
-                    <option value="function">⚡ Function Calling Demo</option>
-                </select>
-                <p id="modeHint" class="mt-1.5 md:mt-2 text-xs text-gray-500">Multi-turn conversation with memory</p>
+            <div class="px-4 pb-4">
+                <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">AI Mode</label>
+                <div class="relative">
+                    <select id="modeSelect" onchange="updateModeHint(); closeSidebarOnMobile();" class="w-full glass-card rounded-xl px-4 py-3 text-sm text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                        <option value="chat" class="bg-gray-900">💬 Chat Assistant</option>
+                        <option value="code" class="bg-gray-900">⌨️ Code Expert</option>
+                        <option value="summarize" class="bg-gray-900">📄 Summarizer</option>
+                        <option value="enhance-image" class="bg-gray-900">🎨 Image Prompt</option>
+                        <option value="json" class="bg-gray-900">📊 JSON Generator</option>
+                        <option value="function" class="bg-gray-900">⚡ Function Calls</option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <p id="modeHint" class="mt-2 text-xs text-gray-500">Multi-turn conversation with memory</p>
             </div>
 
-            <!-- Streaming Toggle -->
-            <div class="px-3 md:px-4 pb-3 md:pb-4">
-                <label class="flex items-center gap-2 md:gap-3 cursor-pointer">
-                    <input type="checkbox" id="streamToggle" checked class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary">
-                    <span class="text-sm text-gray-300">Enable Streaming</span>
+            <!-- Streaming & Voice Settings -->
+            <div class="px-4 pb-4 space-y-3">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" id="streamToggle" checked class="sr-only peer">
+                        <div class="w-10 h-5 bg-gray-700 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-primary-500 peer-checked:to-accent-500 transition-all"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                    </div>
+                    <span class="text-sm text-gray-300 group-hover:text-white transition-colors">Streaming Mode</span>
                 </label>
-                <p class="mt-1 text-xs text-gray-500">See responses as they generate</p>
+                
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" id="autoSendVoice" checked class="sr-only peer">
+                        <div class="w-10 h-5 bg-gray-700 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-primary-500 peer-checked:to-accent-500 transition-all"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                    </div>
+                    <span class="text-sm text-gray-300 group-hover:text-white transition-colors">Auto-send Voice</span>
+                </label>
+                
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" id="ttsToggleSidebar" onchange="toggleTTSFromSidebar()" class="sr-only peer">
+                        <div class="w-10 h-5 bg-gray-700 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-primary-500 peer-checked:to-accent-500 transition-all"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                    </div>
+                    <span class="text-sm text-gray-300 group-hover:text-white transition-colors">Read Aloud</span>
+                </label>
             </div>
 
-            <!-- Voice Settings -->
-            <div class="px-3 md:px-4 pb-3 md:pb-4">
-                <label class="block text-xs md:text-sm font-medium text-gray-400 mb-1.5 md:mb-2">Voice Settings</label>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="autoSendVoice" checked class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary">
-                        <span class="text-sm text-gray-300">Auto-send after speech</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="ttsToggleSidebar" onchange="toggleTTSFromSidebar()" class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary">
-                        <span class="text-sm text-gray-300">Read responses aloud</span>
-                    </label>
-                    <div id="voiceSpeedControl" class="mt-2">
-                        <label class="text-xs text-gray-500 mb-1 block">Speech Speed</label>
-                        <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1" 
-                            onchange="updateTTSSpeed()" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>Slow</span>
-                            <span id="speedValue">1x</span>
-                            <span>Fast</span>
+            <!-- Session Info -->
+            <div class="px-4 pb-4">
+                <div class="glass-card rounded-xl p-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider">Session</p>
+                            <p id="sessionDisplay" class="text-xs text-gray-300 font-mono mt-0.5">Not started</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="status-dot w-2 h-2 bg-emerald-500 rounded-full"></span>
+                            <span class="text-[10px] text-emerald-400">Live</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Session Info -->
-            <div class="px-3 md:px-4 pb-3 md:pb-4">
-                <div class="bg-gray-800 rounded-lg p-2.5 md:p-3">
-                    <p class="text-xs text-gray-400 mb-1">Session ID</p>
-                    <p id="sessionDisplay" class="text-xs text-gray-300 font-mono truncate">Not started</p>
-                </div>
-            </div>
-
             <!-- Chat History -->
-            <div class="flex-1 overflow-y-auto scrollbar-thin px-3 md:px-4">
-                <div class="flex items-center justify-between mb-2 md:mb-3">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">History</p>
-                    <button onclick="clearAllHistory()" class="text-xs text-gray-500 hover:text-red-400 transition-colors">Clear All</button>
+            <div class="flex-1 overflow-y-auto scrollbar-thin px-4">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Recent</p>
+                    <button onclick="clearAllHistory()" class="text-[10px] text-gray-500 hover:text-accent-400 transition-colors">Clear</button>
                 </div>
-                <div id="chatHistory" class="space-y-1.5 md:space-y-2"></div>
+                <div id="chatHistory" class="space-y-2"></div>
             </div>
 
             <!-- Footer -->
-            <div class="p-3 md:p-4 border-t border-gray-700">
-                <div class="flex items-center justify-between text-xs text-gray-500">
-                    <p class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span class="hidden sm:inline">Groq API</span> Connected
-                    </p>
-                    <p id="rateLimitInfo">30 req/min</p>
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-gray-500">Groq API</span>
+                    </div>
+                    <span id="rateLimitInfo" class="text-gray-600">30 req/min</span>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col bg-white dark:bg-gray-800 w-full">
+        <main class="flex-1 flex flex-col relative">
             <!-- Header -->
-            <header class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 dark:border-gray-700">
+            <header class="glass px-4 md:px-6 py-3 md:py-4 border-b border-white/5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <!-- Mobile menu button -->
-                        <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                         </button>
                         <div>
-                            <h2 id="chatTitle" class="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate max-w-[180px] md:max-w-none">New Conversation</h2>
-                            <div class="flex items-center gap-2 mt-0.5 md:mt-1">
-                                <span id="modeBadge" class="mode-badge bg-primary text-white rounded-full">Chat</span>
-                                <p id="chatModelName" class="text-xs md:text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Llama 3.3 70B</p>
+                            <h2 id="chatTitle" class="text-base md:text-lg font-semibold text-white truncate max-w-[200px] md:max-w-none">New Conversation</h2>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span id="modeBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-primary-500/20 to-accent-500/20 text-primary-300 border border-primary-500/30">Chat</span>
+                                <p id="chatModelName" class="text-xs text-gray-500 hidden sm:block">Llama 3.3 70B</p>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 md:gap-2">
-                        <!-- Voice Input Button -->
-                        <button onclick="toggleVoice()" id="voiceBtn" class="relative p-2 text-gray-500 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Voice Input (Click to speak)">
-                            <svg id="micIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                            </svg>
-                            <span id="voicePulse" class="hidden absolute inset-0 rounded-lg bg-red-500 opacity-25 animate-ping"></span>
-                        </button>
-                        <!-- Text-to-Speech Toggle -->
-                        <button onclick="toggleTTS()" id="ttsBtn" class="p-2 text-gray-500 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Read responses aloud">
-                            <svg id="speakerIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
-                            </svg>
-                        </button>
-                        <!-- Stop Speaking Button (hidden by default) -->
-                        <button onclick="stopSpeaking()" id="stopTtsBtn" class="hidden p-2 text-red-500 hover:text-red-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Stop speaking">
+                    <div class="flex items-center gap-1">
+                        <button onclick="clearChat()" class="p-2.5 text-gray-400 hover:text-white rounded-xl hover:bg-white/5 transition-all" title="New Chat">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
-                            </svg>
-                        </button>
-                        <button onclick="clearChat()" class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Clear Chat">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
                         </button>
                     </div>
@@ -277,85 +452,119 @@
             </header>
 
             <!-- Chat Messages -->
-            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 scrollbar-thin chat-container">
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin">
                 <!-- Welcome Message -->
                 <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center px-4">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl gradient-bg flex items-center justify-center mb-3 md:mb-4">
-                        <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+                    <div class="float-animation mb-6">
+                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-primary-500 via-accent-500 to-primary-600 flex items-center justify-center pulse-glow">
+                            <span class="text-4xl md:text-5xl">✦</span>
+                        </div>
                     </div>
-                    <h3 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-2">Welcome to GenFlow Studio</h3>
-                    <p class="text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-md mb-4 md:mb-6">
-                        Powered by Groq's ultra-fast AI. Choose a mode and start creating.
+                    <h3 class="font-display text-2xl md:text-3xl font-bold mb-3">
+                        <span class="gradient-text">Welcome to GenFlow</span>
+                    </h3>
+                    <p class="text-gray-400 max-w-md mb-8 text-sm md:text-base">
+                        Experience the future of AI. Lightning-fast responses powered by Groq's revolutionary LPU technology.
                     </p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3 w-full max-w-2xl">
-                        <button onclick="selectModeAndExample('chat', 'Explain how neural networks learn')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">💬</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">Chat</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Conversations</p>
+                    
+                    <!-- Mode Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full max-w-2xl">
+                        <button onclick="selectModeAndExample('chat', 'Explain quantum computing in simple terms')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">💬</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Chat</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Natural conversations</p>
                         </button>
-                        <button onclick="selectModeAndExample('code', 'Write a Python async web scraper')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">👨‍💻</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">Code</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Programming help</p>
+                        
+                        <button onclick="selectModeAndExample('code', 'Write a React hook for dark mode')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">⌨️</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Code</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Expert programming</p>
                         </button>
-                        <button onclick="selectModeAndExample('summarize', 'Paste a long article to summarize')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">📝</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">Summarize</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Condense text</p>
+                        
+                        <button onclick="selectModeAndExample('summarize', 'Paste any long text here to get a summary')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">📄</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Summarize</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Condense text</p>
                         </button>
-                        <button onclick="selectModeAndExample('enhance-image', 'A cat sitting on a windowsill')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">🎨</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">Image Prompts</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Enhance for SD</p>
+                        
+                        <button onclick="selectModeAndExample('enhance-image', 'A cozy coffee shop on a rainy day')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">🎨</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Image Prompt</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Enhance for AI art</p>
                         </button>
-                        <button onclick="selectModeAndExample('json', 'Generate a user profile for John Doe')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">📋</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">JSON</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Structured data</p>
+                        
+                        <button onclick="selectModeAndExample('json', 'Generate a product catalog for an electronics store')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">📊</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">JSON</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Structured data</p>
                         </button>
-                        <button onclick="selectModeAndExample('function', 'What is the weather in Tokyo?')" class="p-3 md:p-4 text-left bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                            <span class="text-xl md:text-2xl mb-1 md:mb-2 block">⚡</span>
-                            <p class="text-xs md:text-sm font-medium text-gray-900 dark:text-white">Functions</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Tool calling</p>
+                        
+                        <button onclick="selectModeAndExample('function', 'What is the weather in Paris right now?')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-yellow-500/20 to-lime-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">⚡</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Functions</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Tool calling</p>
                         </button>
+                    </div>
+                    
+                    <!-- Quick tips -->
+                    <div class="mt-8 flex flex-wrap justify-center gap-2 text-xs text-gray-500">
+                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Press Enter to send</span>
+                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">🎤 Voice input</span>
+                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">⚡ Ultra-fast</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Input Area -->
-            <div class="px-3 md:px-6 py-3 md:py-4 border-t border-gray-200 dark:border-gray-700">
-                <form id="chatForm" onsubmit="sendMessage(event)" class="flex gap-2 md:gap-4">
-                    <div class="flex-1 relative">
+            <!-- Input Area - Claude Style -->
+            <div class="p-4 md:p-6 pt-2">
+                <form id="chatForm" onsubmit="sendMessage(event)" class="relative max-w-4xl mx-auto">
+                    <div class="relative bg-[#2a2a3a] rounded-2xl border border-white/10 focus-within:border-primary-500/50 transition-colors shadow-lg">
                         <textarea 
                             id="messageInput" 
                             rows="1"
-                            placeholder="Type your message..."
-                            class="w-full resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 md:px-4 py-2.5 md:py-3 pr-12 md:pr-14 text-sm md:text-base text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+                            placeholder="Message GenFlow..."
+                            class="w-full bg-transparent resize-none pl-4 pr-28 py-4 text-white placeholder-gray-500 focus:outline-none text-sm md:text-base max-h-40"
                             onkeydown="handleKeyDown(event)"
                         ></textarea>
-                        <div class="absolute right-1.5 md:right-2 bottom-1.5 md:bottom-2 flex gap-1">
-                            <button type="submit" id="sendButton" class="p-1.5 md:p-2 text-white bg-primary hover:bg-indigo-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        <div class="absolute right-2 bottom-2 flex items-center gap-1">
+                            <!-- Voice Button -->
+                            <button type="button" onclick="toggleVoice()" id="inputVoiceBtn" class="relative p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-all" title="Use microphone">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                                </svg>
+                                <span id="inputVoicePulse" class="hidden absolute inset-0 rounded-lg bg-accent-500 opacity-30 animate-ping"></span>
+                            </button>
+                            <!-- Send Button -->
+                            <button type="submit" id="sendButton" class="p-2 bg-white/10 hover:bg-primary-500 text-gray-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/10" title="Send message">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
                                 </svg>
                             </button>
                         </div>
                     </div>
                 </form>
-                <p class="mt-1.5 md:mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
-                    <span class="hidden sm:inline">Press Enter to send</span>
-                    <span class="hidden sm:inline"> | </span>
-                    <button onclick="toggleVoice()" class="text-gray-500 hover:text-primary transition-colors inline-flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                        </svg>
-                        <span class="hidden sm:inline">Voice</span>
-                    </button>
-                    <span> | </span>
-                    <span id="statusText" class="text-primary">Ready</span>
-                </p>
+                <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
+                    <div class="hidden md:flex items-center gap-3">
+                        <span class="px-1.5 py-0.5 bg-white/5 rounded text-gray-400">⌘K</span>
+                        <span class="text-gray-500">Focus</span>
+                        <span class="px-1.5 py-0.5 bg-white/5 rounded text-gray-400">Esc</span>
+                        <span class="text-gray-500">Clear</span>
+                    </div>
+                    <span id="statusText" class="text-gray-400">GenFlow</span>
+                    <span class="hidden md:inline text-gray-600">AI can make mistakes</span>
+                </div>
             </div>
         </main>
     </div>
@@ -365,9 +574,12 @@
         let sessionId = null;
         let chatHistory = [];
         let isLoading = false;
-        let currentStreamController = null;
         let recognition = null;
         let isListening = false;
+        let ttsEnabled = false;
+        let ttsSpeed = 1.0;
+        let currentUtterance = null;
+        let isSpeaking = false;
 
         // DOM Elements
         const chatMessages = document.getElementById('chatMessages');
@@ -382,12 +594,12 @@
 
         // Mode configurations
         const modeConfig = {
-            'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', streaming: true, placeholder: 'Type your message...' },
-            'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe what code you need...' },
+            'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', streaming: true, placeholder: 'Ask me anything...' },
+            'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe your code needs...' },
             'summarize': { name: 'Summarize', endpoint: '/api/summarize', model: 'Mixtral 8x7B', streaming: false, placeholder: 'Paste text to summarize...' },
-            'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', streaming: false, placeholder: 'Enter a basic image description...' },
-            'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe the JSON you need...' },
-            'function': { name: 'Function', endpoint: '/api/function', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Ask something that might need a tool...' }
+            'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', streaming: false, placeholder: 'Describe your image idea...' },
+            'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe the data structure...' },
+            'function': { name: 'Functions', endpoint: '/api/function', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Ask something actionable...' }
         };
 
         // Initialize
@@ -407,6 +619,7 @@
                 sessionDisplay.textContent = sessionId.substring(0, 8) + '...';
             } catch (e) {
                 console.error('Failed to create session:', e);
+                sessionDisplay.textContent = 'Local';
             }
         }
 
@@ -418,9 +631,6 @@
             document.getElementById('chatModelName').textContent = config.model;
             modeBadge.textContent = config.name;
             messageInput.placeholder = config.placeholder;
-            
-            // Show/hide streaming toggle based on mode
-            streamToggle.parentElement.parentElement.style.display = config.streaming ? 'block' : 'none';
         }
 
         function getHintForMode(mode) {
@@ -428,9 +638,9 @@
                 'chat': 'Multi-turn conversation with memory',
                 'code': 'Expert programming assistance',
                 'summarize': 'Condense long text concisely',
-                'enhance-image': 'Enhance prompts for image generation',
+                'enhance-image': 'Create stunning image prompts',
                 'json': 'Generate structured JSON data',
-                'function': 'Demonstrate AI tool calling'
+                'function': 'AI tool calling demo'
             };
             return hints[mode] || '';
         }
@@ -453,15 +663,12 @@
             const config = modeConfig[mode];
             const useStreaming = config.streaming && streamToggle.checked;
             
-            // Hide welcome message
             if (welcomeMessage) welcomeMessage.style.display = 'none';
 
-            // Add user message
             addMessage(message, 'user');
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
-            // Show loading
             setLoading(true);
 
             try {
@@ -489,9 +696,7 @@
                     headers: { 'Accept': 'text/event-stream' }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
@@ -509,7 +714,6 @@
                             const data = line.substring(6).trim();
                             if (data === '[DONE]' || data === '') continue;
                             
-                            // Handle the token (may contain escaped newlines)
                             const token = data.replace(/\\n/g, '\n');
                             fullContent += token;
                             contentDiv.innerHTML = formatMessage(fullContent);
@@ -526,11 +730,8 @@
                 if (fullContent) {
                     updateChatTitle(message);
                     saveToHistory(message, fullContent, 'chat');
-                    // Speak the response if TTS is enabled
                     speakText(fullContent);
                 } else {
-                    // Fallback to non-streaming if no content received
-                    console.warn('No streaming content received, falling back to standard chat');
                     streamingDiv.remove();
                     await sendStandardMessage(message, '/api/chat');
                 }
@@ -538,7 +739,6 @@
             } catch (error) {
                 console.error('Streaming error:', error);
                 contentDiv.classList.remove('streaming-cursor');
-                // Fallback to non-streaming on error
                 streamingDiv.remove();
                 await sendStandardMessage(message, '/api/chat');
             }
@@ -560,9 +760,8 @@
                 if (data.success) {
                     const mode = modeSelect.value;
                     let content = data.message;
-                    let spokenContent = data.message; // Original text for TTS
+                    let spokenContent = data.message;
                     
-                    // Handle special response formats
                     if (mode === 'code' && data.codeBlocks) {
                         content = formatCodeResponse(data);
                         spokenContent = data.explanation || 'Here is the code you requested.';
@@ -571,14 +770,12 @@
                         spokenContent = 'Here is the generated JSON data.';
                     } else if (data.data && Array.isArray(data.data)) {
                         content = formatFunctionCallResponse(data.data);
-                        spokenContent = 'Function calls have been detected and processed.';
+                        spokenContent = 'Function calls have been processed.';
                     }
                     
                     addMessage(content, 'assistant');
                     updateChatTitle(message);
                     saveToHistory(message, content, mode);
-                    
-                    // Speak the response if TTS is enabled
                     speakText(spokenContent);
                 } else {
                     addMessage(data.error || 'An error occurred', 'error');
@@ -592,11 +789,11 @@
         function formatCodeResponse(data) {
             let html = '';
             if (data.explanation) {
-                html += `<p class="mb-4">${escapeHtml(data.explanation)}</p>`;
+                html += `<p class="mb-4 text-gray-300">${escapeHtml(data.explanation)}</p>`;
             }
             if (data.codeBlocks) {
                 data.codeBlocks.forEach(block => {
-                    html += `<pre><code class="language-${block.language}">${escapeHtml(block.code)}</code></pre>`;
+                    html += `<pre class="rounded-xl overflow-hidden"><code class="language-${block.language}">${escapeHtml(block.code)}</code></pre>`;
                 });
             }
             return html;
@@ -604,16 +801,16 @@
 
         function formatJsonResponse(data) {
             const formatted = JSON.stringify(data, null, 2);
-            return `<div class="json-viewer bg-gray-900 p-4 rounded-lg overflow-x-auto"><pre><code class="language-json">${escapeHtml(formatted)}</code></pre></div>`;
+            return `<div class="json-viewer bg-gray-900/50 p-4 rounded-xl overflow-x-auto border border-white/10"><pre><code class="language-json">${escapeHtml(formatted)}</code></pre></div>`;
         }
 
         function formatFunctionCallResponse(toolCalls) {
-            let html = '<div class="space-y-2">';
-            html += '<p class="font-medium text-primary">Function calls detected:</p>';
+            let html = '<div class="space-y-3">';
+            html += '<p class="font-medium text-primary-400 flex items-center gap-2"><span class="text-lg">⚡</span> Function calls detected:</p>';
             toolCalls.forEach(call => {
-                html += `<div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-                    <p class="font-mono text-sm"><span class="text-purple-500">function:</span> ${call.function?.name || 'unknown'}</p>
-                    <p class="font-mono text-sm text-gray-600 dark:text-gray-400">${call.function?.arguments || '{}'}</p>
+                html += `<div class="glass-card p-4 rounded-xl">
+                    <p class="font-mono text-sm"><span class="text-accent-400">function:</span> <span class="text-white">${call.function?.name || 'unknown'}</span></p>
+                    <p class="font-mono text-xs text-gray-400 mt-1">${call.function?.arguments || '{}'}</p>
                 </div>`;
             });
             html += '</div>';
@@ -621,48 +818,90 @@
         }
 
         function formatMessage(content) {
-            // Convert markdown-style code blocks
+            // Code blocks with copy button
+            let codeBlockId = 0;
             content = content.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
-                return `<pre><code class="language-${lang || 'plaintext'}">${escapeHtml(code.trim())}</code></pre>`;
+                const id = `code-${Date.now()}-${codeBlockId++}`;
+                const escapedCode = escapeHtml(code.trim());
+                return `<pre class="rounded-xl overflow-hidden my-3 relative group/code">
+                    <button onclick="copyCode('${id}')" class="code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs bg-white/10 hover:bg-white/20 text-gray-300 rounded-md transition-all flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copy
+                    </button>
+                    <code id="${id}" class="language-${lang || 'plaintext'}">${escapedCode}</code>
+                </pre>`;
             });
-            // Convert inline code
-            content = content.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">$1</code>');
-            // Convert newlines
+            content = content.replace(/`([^`]+)`/g, '<code class="bg-white/10 px-1.5 py-0.5 rounded text-primary-300 text-sm">$1</code>');
+            content = content.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white">$1</strong>');
             content = content.replace(/\n/g, '<br>');
             return content;
+        }
+        
+        // Copy code block
+        async function copyCode(codeId) {
+            const element = document.getElementById(codeId);
+            if (!element) return;
+            
+            const code = element.textContent;
+            try {
+                await navigator.clipboard.writeText(code);
+                showToast('Code copied!');
+            } catch (e) {
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Code copied!');
+            }
         }
 
         function addMessage(content, type, isStreaming = false) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex gap-2 md:gap-4 message-enter';
+            messageDiv.className = 'flex gap-3 md:gap-4 message-enter group';
             
             const isUser = type === 'user';
             const isError = type === 'error';
+            const messageId = 'msg-' + Date.now();
             
             const avatar = isUser 
-                ? `<div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+                ? `<div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
                     <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                    </div>`
-                : `<div class="w-7 h-7 md:w-8 md:h-8 rounded-full ${isError ? 'bg-red-500' : 'gradient-bg'} flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
+                : `<div class="w-8 h-8 md:w-10 md:h-10 rounded-xl ${isError ? 'bg-gradient-to-br from-red-500 to-rose-500' : 'bg-gradient-to-br from-primary-500 to-accent-500'} flex items-center justify-center flex-shrink-0 shadow-lg ${isError ? 'shadow-red-500/20' : 'shadow-primary-500/20'}">
+                    <span class="text-sm md:text-base">${isError ? '⚠️' : '✦'}</span>
                    </div>`;
 
-            const bgClass = isUser 
-                ? 'bg-indigo-50 dark:bg-indigo-900/20' 
-                : isError 
-                    ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-                    : 'bg-gray-50 dark:bg-gray-700';
-
             const formattedContent = isUser ? escapeHtml(content) : (isStreaming ? '' : formatMessage(content));
+            
+            // Copy button for assistant messages
+            const copyButton = (!isUser && !isError) ? `
+                <div class="flex items-center gap-1 mt-3 pt-3 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="copyMessage('${messageId}')" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Copy response">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span>Copy</span>
+                    </button>
+                    <button onclick="speakMessage('${messageId}')" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Read aloud">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                        </svg>
+                        <span>Read</span>
+                    </button>
+                </div>
+            ` : '';
 
             messageDiv.innerHTML = `
                 ${avatar}
-                <div class="flex-1 ${bgClass} rounded-xl md:rounded-2xl px-3 md:px-4 py-2 md:py-3 overflow-hidden">
-                    <div class="message-content prose dark:prose-invert max-w-none text-sm md:text-base">${formattedContent}</div>
+                <div class="flex-1 glass-card rounded-2xl px-4 py-3 md:px-5 md:py-4 overflow-hidden ${isError ? 'border-red-500/30' : ''} ${isUser ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20' : ''}">
+                    <div id="${messageId}" class="message-content prose prose-invert max-w-none text-sm md:text-base text-gray-200" data-raw="${isUser ? '' : escapeHtml(content)}">${formattedContent}</div>
+                    ${copyButton}
                 </div>
             `;
 
@@ -672,6 +911,53 @@
             if (!isStreaming) highlightCodeBlocks();
             
             return messageDiv;
+        }
+        
+        // Copy message to clipboard
+        async function copyMessage(messageId) {
+            const element = document.getElementById(messageId);
+            if (!element) return;
+            
+            // Get raw text content
+            const rawContent = element.getAttribute('data-raw') || element.innerText;
+            
+            try {
+                await navigator.clipboard.writeText(rawContent);
+                showToast('Copied to clipboard!');
+            } catch (e) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = rawContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Copied to clipboard!');
+            }
+        }
+        
+        // Speak a specific message
+        function speakMessage(messageId) {
+            const element = document.getElementById(messageId);
+            if (!element) return;
+            
+            const rawContent = element.getAttribute('data-raw') || element.innerText;
+            ttsEnabled = true;
+            speakText(rawContent);
+        }
+        
+        // Toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-lg text-white text-sm rounded-full border border-white/20 z-50 animate-fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
         }
 
         function highlightCodeBlocks() {
@@ -684,18 +970,16 @@
             const id = 'typing-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = 'flex gap-2 md:gap-4 message-enter';
+            div.className = 'flex gap-3 md:gap-4 message-enter';
             div.innerHTML = `
-                <div class="w-7 h-7 md:w-8 md:h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary-500/20">
+                    <span class="text-sm md:text-base">✦</span>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-xl md:rounded-2xl px-3 md:px-4 py-2 md:py-3">
-                    <div class="typing-indicator flex gap-1">
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+                <div class="glass-card rounded-2xl px-5 py-4">
+                    <div class="typing-indicator flex gap-1.5">
+                        <span class="w-2 h-2 rounded-full"></span>
+                        <span class="w-2 h-2 rounded-full"></span>
+                        <span class="w-2 h-2 rounded-full"></span>
                     </div>
                 </div>
             `;
@@ -713,7 +997,8 @@
             isLoading = loading;
             sendButton.disabled = loading;
             messageInput.disabled = loading;
-            statusText.textContent = loading ? 'Processing...' : 'Ready';
+            statusText.textContent = loading ? 'Generating response...' : 'GenFlow';
+            statusText.className = loading ? 'text-primary-400 animate-pulse' : 'text-gray-400';
         }
 
         function escapeHtml(text) {
@@ -725,20 +1010,72 @@
         function autoResizeTextarea() {
             messageInput.addEventListener('input', function() {
                 this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+                this.style.height = Math.min(this.scrollHeight, 128) + 'px';
             });
         }
 
         function handleKeyDown(event) {
+            // Enter to send (without Shift)
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 sendMessage(event);
             }
+            // Ctrl/Cmd + Enter to send (alternative)
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                sendMessage(event);
+            }
         }
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            // Escape to clear input
+            if (event.key === 'Escape') {
+                if (messageInput.value) {
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                } else {
+                    messageInput.blur();
+                }
+            }
+            
+            // Ctrl/Cmd + K to focus input
+            if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                event.preventDefault();
+                messageInput.focus();
+            }
+            
+            // Ctrl/Cmd + Shift + N for new chat
+            if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'N') {
+                event.preventDefault();
+                newChat();
+            }
+            
+            // Ctrl/Cmd + / to toggle voice
+            if ((event.ctrlKey || event.metaKey) && event.key === '/') {
+                event.preventDefault();
+                toggleVoice();
+            }
+        });
 
         function updateChatTitle(message) {
             const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
             document.getElementById('chatTitle').textContent = title;
+        }
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebarOnMobile() {
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('sidebarOverlay').classList.remove('active');
+            }
         }
 
         function newChat() {
@@ -746,19 +1083,7 @@
             chatMessages.innerHTML = '';
             createSession();
             closeSidebarOnMobile();
-            
-            // Restore welcome
-            chatMessages.innerHTML = document.getElementById('welcomeMessage') ? '' : `
-                <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center">
-                    <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Start a new conversation</h3>
-                    <p class="text-gray-500">Select a mode and type your message</p>
-                </div>
-            `;
+            location.reload();
         }
 
         function clearChat() {
@@ -792,11 +1117,11 @@
             const container = document.getElementById('chatHistory');
             container.innerHTML = chatHistory.map(chat => `
                 <div class="group relative">
-                    <button onclick="loadChat('${chat.id}')" class="w-full text-left p-3 rounded-lg hover:bg-gray-800 transition-colors pr-8">
+                    <button onclick="loadChat('${chat.id}')" class="w-full text-left p-3 rounded-xl glass-card transition-all pr-8">
                         <p class="text-sm text-gray-300 truncate">${escapeHtml(chat.title)}</p>
-                        <p class="text-xs text-gray-500 mt-1">${chat.mode} • ${new Date(chat.timestamp).toLocaleDateString()}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">${chat.mode} • ${new Date(chat.timestamp).toLocaleDateString()}</p>
                     </button>
-                    <button onclick="deleteHistoryItem('${chat.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onclick="deleteHistoryItem('${chat.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-600 hover:text-accent-400 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-white/5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -818,40 +1143,14 @@
         }
 
         function loadChat(id) {
-            // In full implementation, would load from backend
             console.log('Loading chat:', id);
         }
 
-        // Sidebar toggle for mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-            document.body.classList.toggle('overflow-hidden', sidebar.classList.contains('open'));
-        }
-
-        // Close sidebar when clicking a mode on mobile
-        function closeSidebarOnMobile() {
-            if (window.innerWidth < 768) {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebarOverlay');
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-                document.body.classList.remove('overflow-hidden');
-            }
-        }
-
-        // Voice recognition & Text-to-Speech
-        let ttsEnabled = false;
-        let currentUtterance = null;
-        let isSpeaking = false;
-
+        // Voice recognition
         function initVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 document.getElementById('voiceBtn').style.display = 'none';
-                console.log('Speech recognition not supported');
                 return;
             }
 
@@ -864,34 +1163,25 @@
                 isListening = true;
                 updateVoiceUI(true);
                 statusText.textContent = 'Listening...';
-                statusText.classList.add('text-red-500');
+                statusText.className = 'text-accent-400';
             };
 
             recognition.onresult = (event) => {
-                let interimTranscript = '';
                 let finalTranscript = '';
-                
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        finalTranscript += transcript;
-                    } else {
-                        interimTranscript += transcript;
+                        finalTranscript += event.results[i][0].transcript;
                     }
                 }
-                
-                messageInput.value = finalTranscript || interimTranscript;
-                messageInput.style.height = 'auto';
-                messageInput.style.height = Math.min(messageInput.scrollHeight, 150) + 'px';
+                if (finalTranscript) messageInput.value = finalTranscript;
             };
 
             recognition.onend = () => {
                 isListening = false;
                 updateVoiceUI(false);
-                statusText.textContent = 'Ready';
-                statusText.classList.remove('text-red-500');
+                statusText.textContent = 'GenFlow';
+                statusText.className = 'text-gray-400';
                 
-                // Auto-send if we have a final transcript and auto-send is enabled
                 const autoSend = document.getElementById('autoSendVoice').checked;
                 if (autoSend && messageInput.value.trim()) {
                     setTimeout(() => {
@@ -903,157 +1193,216 @@
             };
 
             recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
                 isListening = false;
                 updateVoiceUI(false);
-                statusText.textContent = 'Ready';
-                statusText.classList.remove('text-red-500');
-                
-                if (event.error === 'not-allowed') {
-                    alert('Microphone access denied. Please allow microphone access in your browser settings.');
-                } else if (event.error === 'no-speech') {
-                    statusText.textContent = 'No speech detected';
-                    setTimeout(() => { statusText.textContent = 'Ready'; }, 2000);
-                }
+                statusText.textContent = 'GenFlow';
+                statusText.className = 'text-gray-400';
             };
         }
 
         function updateVoiceUI(listening) {
-            const voiceBtn = document.getElementById('voiceBtn');
-            const voicePulse = document.getElementById('voicePulse');
+            const inputVoiceBtn = document.getElementById('inputVoiceBtn');
+            const inputVoicePulse = document.getElementById('inputVoicePulse');
             
             if (listening) {
-                voiceBtn.classList.add('text-red-500', 'bg-red-50', 'dark:bg-red-900/20');
-                voiceBtn.classList.remove('text-gray-500');
-                voicePulse.classList.remove('hidden');
+                inputVoiceBtn.classList.add('text-accent-400', 'bg-accent-500/20');
+                inputVoiceBtn.classList.remove('text-gray-400');
+                inputVoicePulse.classList.remove('hidden');
             } else {
-                voiceBtn.classList.remove('text-red-500', 'bg-red-50', 'dark:bg-red-900/20');
-                voiceBtn.classList.add('text-gray-500');
-                voicePulse.classList.add('hidden');
+                inputVoiceBtn.classList.remove('text-accent-400', 'bg-accent-500/20');
+                inputVoiceBtn.classList.add('text-gray-400');
+                inputVoicePulse.classList.add('hidden');
             }
         }
 
         function toggleVoice() {
             if (!recognition) {
-                alert('Speech recognition is not supported in your browser. Try Chrome or Edge.');
+                alert('Speech recognition is not supported in your browser.');
                 return;
             }
-            
             if (isListening) {
                 recognition.stop();
             } else {
-                try {
-                    recognition.start();
-                } catch (e) {
-                    console.error('Failed to start recognition:', e);
-                }
+                try { recognition.start(); } catch (e) {}
             }
         }
 
-        // Text-to-Speech functions
-        let ttsSpeed = 1.0;
-
+        // Text-to-Speech
         function toggleTTS() {
             ttsEnabled = !ttsEnabled;
-            updateTTSButtonState();
-            // Sync with sidebar checkbox
             document.getElementById('ttsToggleSidebar').checked = ttsEnabled;
+            if (!ttsEnabled) stopSpeaking();
         }
 
         function toggleTTSFromSidebar() {
             ttsEnabled = document.getElementById('ttsToggleSidebar').checked;
-            updateTTSButtonState();
+            if (!ttsEnabled) stopSpeaking();
         }
 
-        function updateTTSButtonState() {
-            const ttsBtn = document.getElementById('ttsBtn');
+        // Enhanced Human-like Text-to-Speech
+        let speechQueue = [];
+        let selectedVoice = null;
+        
+        function initVoices() {
+            const voices = speechSynthesis.getVoices();
+            if (voices.length === 0) return;
             
-            if (ttsEnabled) {
-                ttsBtn.classList.add('text-primary', 'bg-indigo-50', 'dark:bg-indigo-900/20');
-                ttsBtn.classList.remove('text-gray-500');
-                ttsBtn.title = 'Text-to-speech ON (click to disable)';
-            } else {
-                ttsBtn.classList.remove('text-primary', 'bg-indigo-50', 'dark:bg-indigo-900/20');
-                ttsBtn.classList.add('text-gray-500');
-                ttsBtn.title = 'Read responses aloud';
-                stopSpeaking();
+            // Priority order for natural-sounding voices
+            const preferredVoices = [
+                'Google UK English Female',
+                'Google UK English Male', 
+                'Google US English',
+                'Samantha',
+                'Karen',
+                'Daniel',
+                'Microsoft Zira',
+                'Microsoft David',
+                'Alex',
+            ];
+            
+            // Find the best available voice
+            for (const preferred of preferredVoices) {
+                const found = voices.find(v => v.name.includes(preferred));
+                if (found) {
+                    selectedVoice = found;
+                    console.log('Selected voice:', found.name);
+                    return;
+                }
             }
+            
+            // Fallback to any English voice with good quality indicators
+            selectedVoice = voices.find(v => 
+                v.lang.startsWith('en') && 
+                (v.localService || v.name.includes('Google') || v.name.includes('Microsoft'))
+            ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+            
+            console.log('Fallback voice:', selectedVoice?.name);
         }
-
-        function updateTTSSpeed() {
-            ttsSpeed = parseFloat(document.getElementById('ttsSpeed').value);
-            document.getElementById('speedValue').textContent = ttsSpeed + 'x';
-        }
-
+        
         function speakText(text) {
             if (!ttsEnabled || !window.speechSynthesis) return;
-            
-            // Stop any current speech
             stopSpeaking();
             
-            // Clean text for speech (remove code blocks, markdown, etc.)
-            const cleanText = text
-                .replace(/```[\s\S]*?```/g, ' code block ')
-                .replace(/`[^`]+`/g, '')
+            // Clean and prepare text for natural speech
+            let cleanText = text
+                .replace(/```[\s\S]*?```/g, '... code example provided ...')
+                .replace(/`([^`]+)`/g, '$1')
                 .replace(/<[^>]+>/g, '')
                 .replace(/\*\*([^*]+)\*\*/g, '$1')
                 .replace(/\*([^*]+)\*/g, '$1')
-                .replace(/#{1,6}\s/g, '')
-                .replace(/\n+/g, '. ')
+                .replace(/#{1,6}\s*/g, '')
+                .replace(/\n{2,}/g, '. ')
+                .replace(/\n/g, ', ')
                 .replace(/\s+/g, ' ')
                 .trim();
             
             if (!cleanText) return;
             
-            currentUtterance = new SpeechSynthesisUtterance(cleanText);
-            currentUtterance.rate = ttsSpeed;
-            currentUtterance.pitch = 1.0;
-            currentUtterance.volume = 1.0;
+            // Split into sentences for more natural delivery with pauses
+            const sentences = splitIntoSentences(cleanText);
+            speechQueue = [...sentences];
             
-            // Try to use a natural-sounding voice
-            const voices = speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => 
-                v.name.includes('Google') || 
-                v.name.includes('Samantha') || 
-                v.name.includes('Daniel') ||
-                (v.lang.startsWith('en') && v.localService)
-            );
-            if (preferredVoice) {
-                currentUtterance.voice = preferredVoice;
+            speakNextSentence();
+        }
+        
+        function splitIntoSentences(text) {
+            // Split on sentence boundaries while keeping the punctuation
+            const sentences = [];
+            const parts = text.split(/(?<=[.!?])\s+/);
+            
+            for (const part of parts) {
+                if (part.trim()) {
+                    // Further split very long sentences at commas for natural breathing
+                    if (part.length > 150) {
+                        const subParts = part.split(/(?<=,)\s+/);
+                        let current = '';
+                        for (const sub of subParts) {
+                            if ((current + sub).length > 120 && current) {
+                                sentences.push(current.trim());
+                                current = sub;
+                            } else {
+                                current += (current ? ' ' : '') + sub;
+                            }
+                        }
+                        if (current.trim()) sentences.push(current.trim());
+                    } else {
+                        sentences.push(part.trim());
+                    }
+                }
+            }
+            return sentences;
+        }
+        
+        function speakNextSentence() {
+            if (speechQueue.length === 0 || !ttsEnabled) {
+                isSpeaking = false;
+                return;
             }
             
-            currentUtterance.onstart = () => {
+            const sentence = speechQueue.shift();
+            const utterance = new SpeechSynthesisUtterance(sentence);
+            
+            // Apply natural voice settings
+            if (selectedVoice) utterance.voice = selectedVoice;
+            
+            // Natural speech parameters
+            utterance.rate = 0.9 + (Math.random() * 0.15); // Slight variation: 0.9-1.05
+            utterance.pitch = 1.0 + (Math.random() * 0.1 - 0.05); // Slight variation: 0.95-1.05
+            utterance.volume = 1.0;
+            
+            // Adjust rate based on sentence content
+            if (sentence.endsWith('?')) {
+                utterance.pitch += 0.1; // Slightly higher pitch for questions
+            } else if (sentence.endsWith('!')) {
+                utterance.rate += 0.05; // Slightly faster for exclamations
+            }
+            
+            // If sentence contains numbers or technical terms, slow down slightly
+            if (/\d{3,}|[A-Z]{3,}/.test(sentence)) {
+                utterance.rate -= 0.1;
+            }
+            
+            utterance.onstart = () => {
                 isSpeaking = true;
-                document.getElementById('stopTtsBtn').classList.remove('hidden');
             };
             
-            currentUtterance.onend = () => {
+            utterance.onend = () => {
+                // Add a natural pause between sentences
+                const pauseDuration = sentence.endsWith('.') ? 300 : 
+                                     sentence.endsWith('?') ? 400 : 
+                                     sentence.endsWith('!') ? 350 : 200;
+                
+                setTimeout(() => {
+                    if (ttsEnabled && speechQueue.length > 0) {
+                        speakNextSentence();
+                    } else {
+                        isSpeaking = false;
+                    }
+                }, pauseDuration);
+            };
+            
+            utterance.onerror = (e) => {
+                console.error('Speech error:', e);
                 isSpeaking = false;
-                document.getElementById('stopTtsBtn').classList.add('hidden');
+                speechQueue = [];
             };
             
-            currentUtterance.onerror = (e) => {
-                console.error('TTS error:', e);
-                isSpeaking = false;
-                document.getElementById('stopTtsBtn').classList.add('hidden');
-            };
-            
-            speechSynthesis.speak(currentUtterance);
+            speechSynthesis.speak(utterance);
         }
 
         function stopSpeaking() {
+            speechQueue = [];
             if (window.speechSynthesis) {
                 speechSynthesis.cancel();
             }
             isSpeaking = false;
-            document.getElementById('stopTtsBtn').classList.add('hidden');
         }
 
-        // Load voices when available
+        // Initialize voices
         if (window.speechSynthesis) {
-            speechSynthesis.onvoiceschanged = () => {
-                speechSynthesis.getVoices();
-            };
+            speechSynthesis.onvoiceschanged = initVoices;
+            // Also try to init immediately in case voices are already loaded
+            setTimeout(initVoices, 100);
         }
     </script>
 </body>

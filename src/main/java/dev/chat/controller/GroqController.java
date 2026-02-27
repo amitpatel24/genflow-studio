@@ -17,7 +17,7 @@ import reactor.core.publisher.Flux;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:8080", "http://127.0.0.1:8080"}, allowCredentials = "true")
 public class GroqController {
 
     private static final Logger log = LoggerFactory.getLogger(GroqController.class);
