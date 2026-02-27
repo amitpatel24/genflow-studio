@@ -36,7 +36,10 @@ public class GeminiVisionService {
         this.config = config;
         this.objectMapper = objectMapper;
         
-        log.info("GeminiVisionService initialized with model: {}", config.model());
+        String keyStatus = (config.key() != null && !config.key().isBlank() && !config.key().equals("your-google-ai-key"))
+            ? "configured (ends with ..." + config.key().substring(Math.max(0, config.key().length() - 4)) + ")"
+            : "NOT CONFIGURED - Set GEMINI_API_KEY env variable!";
+        log.info("GeminiVisionService initialized - model: {}, API key: {}", config.model(), keyStatus);
     }
 
     /**
@@ -116,13 +119,23 @@ public class GeminiVisionService {
      * Call the Gemini API with the given request body.
      */
     private String callGeminiApi(ObjectNode requestBody) {
-        String endpoint = "/models/" + config.model() + ":generateContent?key=" + config.key();
+        String apiKey = config.key();
+        if (apiKey == null || apiKey.isBlank() || apiKey.equals("your-google-ai-key")) {
+            log.error("GEMINI_API_KEY is not configured! Please set the environment variable.");
+            throw new AiApiException("Gemini API key not configured. Set GEMINI_API_KEY environment variable.", 401, "UNAUTHORIZED");
+        }
+        
+        String endpoint = "/models/" + config.model() + ":generateContent?key=" + apiKey;
+        log.debug("Calling Gemini API: {} (key length: {})", "/models/" + config.model() + ":generateContent", apiKey.length());
         
         try {
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
+            log.debug("Request body: {}", jsonBody.substring(0, Math.min(200, jsonBody.length())) + "...");
+            
             return webClient.post()
                 .uri(endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(requestBody)
+                .bodyValue(jsonBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response ->
                     response.bodyToMono(String.class)

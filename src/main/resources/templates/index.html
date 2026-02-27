@@ -211,6 +211,8 @@
                 z-index: 50;
                 transform: translateX(-100%);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                width: 85vw;
+                max-width: 320px;
             }
             .sidebar.open { transform: translateX(0); }
         }
@@ -222,6 +224,35 @@
             transition: all 0.3s ease;
         }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        
+        /* Dynamic viewport height for mobile browsers */
+        .dynamic-vh {
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        
+        /* Extra small screens (phones in portrait) */
+        @media (max-width: 380px) {
+            .mode-card { padding: 0.75rem !important; }
+            .mode-card p { font-size: 0.75rem !important; }
+            .mode-card .text-xl { font-size: 1rem !important; }
+        }
+        
+        /* Large screens */
+        @media (min-width: 1280px) {
+            .chat-container { max-width: 900px; }
+        }
+        @media (min-width: 1536px) {
+            .chat-container { max-width: 1000px; }
+        }
+        
+        /* Landscape mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .welcome-icon { width: 3rem !important; height: 3rem !important; }
+            .welcome-icon span { font-size: 1.5rem !important; }
+            .welcome-title { font-size: 1.25rem !important; }
+            .mode-cards-grid { gap: 0.5rem !important; }
+        }
         
         /* Range slider */
         input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; }
@@ -295,7 +326,7 @@
         }
     </style>
 </head>
-<body class="main-bg min-h-screen text-white">
+<body class="main-bg min-h-screen dynamic-vh text-white overflow-hidden">
     <!-- Decorative orbs -->
     <div class="orb orb-1 hidden md:block"></div>
     <div class="orb orb-2 hidden md:block"></div>
@@ -303,13 +334,13 @@
     <!-- Mobile sidebar overlay -->
     <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 z-40 md:hidden" onclick="toggleSidebar()"></div>
     
-    <div class="flex h-screen relative z-10">
+    <div class="flex h-screen h-[100dvh] relative z-10">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar sidebar-glass w-72 md:w-80 flex flex-col h-full">
+        <aside id="sidebar" class="sidebar sidebar-glass w-72 md:w-80 lg:w-80 flex flex-col h-full">
             <!-- Logo -->
             <div class="p-4 md:p-5 border-b border-white/5">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
+                    <a href="/" onclick="location.reload(); return false;" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" title="Refresh">
                         <div class="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center pulse-glow">
                             <span class="text-xl">✦</span>
                         </div>
@@ -317,7 +348,7 @@
                             <h1 class="font-display font-bold text-lg gradient-text">GenFlow Studio</h1>
                             <p class="text-[11px] text-gray-500">AI-Powered Creativity</p>
                         </div>
-                    </div>
+                    </a>
                     <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -427,25 +458,25 @@
         <!-- Main Content -->
         <main class="flex-1 flex flex-col relative">
             <!-- Header -->
-            <header class="glass px-4 md:px-6 py-3 md:py-4 border-b border-white/5">
+            <header class="glass px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 border-b border-white/5">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <button onclick="toggleSidebar()" class="md:hidden p-1.5 sm:p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                         </button>
                         <div>
-                            <h2 id="chatTitle" class="text-base md:text-lg font-semibold text-white truncate max-w-[200px] md:max-w-none">New Conversation</h2>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span id="modeBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-primary-500/20 to-accent-500/20 text-primary-300 border border-primary-500/30">Chat</span>
-                                <p id="chatModelName" class="text-xs text-gray-500 hidden sm:block">Llama 3.3 70B</p>
+                            <h2 id="chatTitle" class="text-sm sm:text-base md:text-lg font-semibold text-white truncate max-w-[150px] sm:max-w-[200px] md:max-w-none">New Conversation</h2>
+                            <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5">
+                                <span id="modeBadge" class="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-gradient-to-r from-primary-500/20 to-accent-500/20 text-primary-300 border border-primary-500/30">Chat</span>
+                                <p id="chatModelName" class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Llama 3.3 70B</p>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="clearChat()" class="p-2.5 text-gray-400 hover:text-white rounded-xl hover:bg-white/5 transition-all" title="New Chat">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-0.5 sm:gap-1">
+                        <button onclick="clearChat()" class="p-1.5 sm:p-2 md:p-2.5 text-gray-400 hover:text-white rounded-lg sm:rounded-xl hover:bg-white/5 transition-all" title="New Chat">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
                         </button>
@@ -454,101 +485,101 @@
             </header>
 
             <!-- Chat Messages -->
-            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin">
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6 scrollbar-thin">
                 <!-- Welcome Message -->
-                <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center px-4">
-                    <div class="float-animation mb-6">
-                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-primary-500 via-accent-500 to-primary-600 flex items-center justify-center pulse-glow">
-                            <span class="text-4xl md:text-5xl">✦</span>
+                <div id="welcomeMessage" class="flex flex-col items-center justify-center h-full text-center px-2 sm:px-4 py-4">
+                    <div class="float-animation mb-4 sm:mb-6">
+                        <div class="welcome-icon w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary-500 via-accent-500 to-primary-600 flex items-center justify-center pulse-glow">
+                            <span class="text-3xl sm:text-4xl md:text-5xl">✦</span>
                         </div>
                     </div>
-                    <h3 class="font-display text-2xl md:text-3xl font-bold mb-3">
+                    <h3 class="welcome-title font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3">
                         <span class="gradient-text">Welcome to GenFlow</span>
                     </h3>
-                    <p class="text-gray-400 max-w-md mb-8 text-sm md:text-base">
+                    <p class="text-gray-400 max-w-md mb-4 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base px-2">
                         Experience the future of AI. Choose between Groq's ultra-fast LPU or Google's powerful Gemini models.
                     </p>
                     
                     <!-- Mode Cards -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full max-w-2xl">
-                        <button onclick="selectModeAndExample('chat', 'Explain quantum computing in simple terms')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">💬</span>
+                    <div class="mode-cards-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 w-full max-w-2xl lg:max-w-3xl px-1">
+                        <button onclick="selectModeAndExample('chat', 'Explain quantum computing in simple terms')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">💬</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Chat</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Natural conversations</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">Chat</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Natural conversations</p>
                         </button>
                         
-                        <button onclick="selectModeAndExample('code', 'Write a React hook for dark mode')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">⌨️</span>
+                        <button onclick="selectModeAndExample('code', 'Write a React hook for dark mode')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">⌨️</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Code</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Expert programming</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">Code</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Expert programming</p>
                         </button>
                         
-                        <button onclick="selectModeAndExample('summarize', 'Paste any long text here to get a summary')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">📄</span>
+                        <button onclick="selectModeAndExample('summarize', 'Paste any long text here to get a summary')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">📄</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Summarize</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Condense text</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">Summarize</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Condense text</p>
                         </button>
                         
-                        <button onclick="selectMode('vision')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group border border-primary-500/30">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">👁️</span>
+                        <button onclick="selectMode('vision')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group border border-primary-500/30">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">👁️</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Vision</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Analyze images</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">Vision</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Analyze images</p>
                         </button>
                         
-                        <button onclick="selectMode('document')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group border border-primary-500/30">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">📑</span>
+                        <button onclick="selectMode('document')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group border border-primary-500/30">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">📑</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Document</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Analyze PDFs</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">Document</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Analyze PDFs</p>
                         </button>
                         
-                        <button onclick="selectModeAndExample('json', 'Generate a product catalog for an electronics store')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">📊</span>
+                        <button onclick="selectModeAndExample('json', 'Generate a product catalog for an electronics store')" class="mode-card glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 text-left group">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-lg sm:text-xl md:text-2xl">📊</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">JSON</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Structured data</p>
+                            <p class="text-xs sm:text-sm md:text-base font-medium text-white mb-0.5 sm:mb-1">JSON</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Structured data</p>
                         </button>
                     </div>
                     
                     <!-- Quick tips -->
-                    <div class="mt-8 flex flex-wrap justify-center gap-2 text-xs text-gray-500">
-                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Press Enter to send</span>
-                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">🎤 Voice input</span>
-                        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">⚡ Ultra-fast</span>
+                    <div class="mt-4 sm:mt-6 md:mt-8 flex flex-wrap justify-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-500">
+                        <span class="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/5 border border-white/10">Enter to send</span>
+                        <span class="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/5 border border-white/10">🎤 Voice</span>
+                        <span class="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/5 border border-white/10">⚡ Fast</span>
                     </div>
                 </div>
             </div>
 
             <!-- Input Area - Claude Style -->
-            <div class="p-4 md:p-6 pt-2">
+            <div class="p-2 sm:p-4 md:p-6 pt-2">
                 <!-- File Upload Area (for Vision/Document modes) -->
-                <div id="fileUploadArea" class="hidden max-w-4xl mx-auto mb-3">
-                    <div class="glass-card rounded-xl p-4 border-dashed border-2 border-gray-600 hover:border-primary-500 transition-colors">
+                <div id="fileUploadArea" class="hidden chat-container max-w-4xl lg:max-w-5xl mx-auto mb-2 sm:mb-3">
+                    <div class="glass-card rounded-lg sm:rounded-xl p-3 sm:p-4 border-dashed border-2 border-gray-600 hover:border-primary-500 transition-colors">
                         <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
-                        <label for="fileInput" class="flex flex-col items-center cursor-pointer">
-                            <svg id="uploadIcon" class="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <label for="fileInput" class="flex flex-col items-center cursor-pointer py-2 sm:py-4">
+                            <svg id="uploadIcon" class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-1.5 sm:mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <span id="uploadLabel" class="text-sm text-gray-300 font-medium">Upload Image</span>
-                            <span class="text-xs text-gray-500 mt-1">Max 10MB</span>
+                            <span id="uploadLabel" class="text-xs sm:text-sm text-gray-300 font-medium">Upload Image</span>
+                            <span class="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Max 10MB</span>
                         </label>
                     </div>
                     <!-- File Preview -->
-                    <div id="filePreview" class="hidden mt-3 glass-card rounded-xl p-3">
-                        <div class="flex items-center gap-3">
-                            <div id="previewContent" class="flex items-center gap-3 flex-1 min-w-0"></div>
-                            <button onclick="removeFile()" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div id="filePreview" class="hidden mt-2 sm:mt-3 glass-card rounded-lg sm:rounded-xl p-2 sm:p-3">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div id="previewContent" class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0"></div>
+                            <button onclick="removeFile()" class="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
@@ -556,37 +587,37 @@
                     </div>
                 </div>
 
-                <form id="chatForm" onsubmit="sendMessage(event)" class="relative max-w-4xl mx-auto">
-                    <div class="relative bg-[#2a2a3a] rounded-2xl border border-white/10 focus-within:border-primary-500/50 transition-colors shadow-lg">
+                <form id="chatForm" onsubmit="sendMessage(event)" class="relative chat-container max-w-4xl lg:max-w-5xl mx-auto">
+                    <div class="relative bg-[#2a2a3a] rounded-xl sm:rounded-2xl border border-white/10 focus-within:border-primary-500/50 transition-colors shadow-lg">
                         <textarea 
                             id="messageInput" 
                             rows="1"
                             placeholder="Message GenFlow..."
-                            class="w-full bg-transparent resize-none pl-4 pr-28 py-4 text-white placeholder-gray-500 focus:outline-none text-sm md:text-base max-h-40"
+                            class="w-full bg-transparent resize-none pl-3 sm:pl-4 pr-20 sm:pr-28 py-3 sm:py-4 text-white placeholder-gray-500 focus:outline-none text-sm md:text-base max-h-32 sm:max-h-40"
                             onkeydown="handleKeyDown(event)"
                         ></textarea>
-                        <div class="absolute right-2 bottom-2 flex items-center gap-1">
+                        <div class="absolute right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 flex items-center gap-0.5 sm:gap-1">
                             <!-- Voice Button -->
-                            <button type="button" onclick="toggleVoice()" id="inputVoiceBtn" class="relative p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-all" title="Use microphone">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="button" onclick="toggleVoice()" id="inputVoiceBtn" class="relative p-1.5 sm:p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-all" title="Use microphone">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
                                 </svg>
                                 <span id="inputVoicePulse" class="hidden absolute inset-0 rounded-lg bg-accent-500 opacity-30 animate-ping"></span>
                             </button>
                             <!-- Send Button -->
-                            <button type="submit" id="sendButton" class="p-2 bg-white/10 hover:bg-primary-500 text-gray-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/10" title="Send message">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="submit" id="sendButton" class="p-1.5 sm:p-2 bg-white/10 hover:bg-primary-500 text-gray-400 hover:text-white rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/10" title="Send message">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
                                 </svg>
                             </button>
                         </div>
                     </div>
                 </form>
-                <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
-                    <div class="hidden md:flex items-center gap-3">
-                        <span class="px-1.5 py-0.5 bg-white/5 rounded text-gray-400">⌘K</span>
+                <div class="flex items-center justify-between mt-2 sm:mt-3 text-[10px] sm:text-xs text-gray-500 px-1">
+                    <div class="hidden sm:flex items-center gap-2 sm:gap-3">
+                        <span class="px-1 sm:px-1.5 py-0.5 bg-white/5 rounded text-gray-400">⌘K</span>
                         <span class="text-gray-500">Focus</span>
-                        <span class="px-1.5 py-0.5 bg-white/5 rounded text-gray-400">Esc</span>
+                        <span class="px-1 sm:px-1.5 py-0.5 bg-white/5 rounded text-gray-400">Esc</span>
                         <span class="text-gray-500">Clear</span>
                     </div>
                     <span id="statusText" class="text-gray-400">GenFlow</span>
@@ -624,8 +655,8 @@
             'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', provider: 'groq', streaming: true, placeholder: 'Ask me anything...', fileUpload: false },
             'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Describe your code needs...', fileUpload: false },
             'summarize': { name: 'Summarize', endpoint: '/api/summarize', model: 'Mixtral 8x7B', provider: 'groq', streaming: false, placeholder: 'Paste text to summarize...', fileUpload: false },
-            'vision': { name: 'Vision', endpoint: '/api/vision', model: 'Gemini 1.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Describe what to analyze in the image...', fileUpload: 'image', accept: 'image/*' },
-            'document': { name: 'Document', endpoint: '/api/document', model: 'Gemini 1.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Ask about the document...', fileUpload: 'pdf', accept: '.pdf' },
+            'vision': { name: 'Vision', endpoint: '/api/vision', model: 'Gemini 2.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Describe what to analyze in the image...', fileUpload: 'image', accept: 'image/*' },
+            'document': { name: 'Document', endpoint: '/api/document', model: 'Gemini 2.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Ask about the document...', fileUpload: 'pdf', accept: '.pdf' },
             'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', provider: 'groq', streaming: false, placeholder: 'Describe your image idea...', fileUpload: false },
             'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Describe the data structure...', fileUpload: false },
             'function': { name: 'Functions', endpoint: '/api/function', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Ask something actionable...', fileUpload: false }
@@ -839,19 +870,30 @@
             }
         }
 
+        function stripBase64Prefix(dataUrl) {
+            if (!dataUrl) return dataUrl;
+            const commaIndex = dataUrl.indexOf(',');
+            if (commaIndex !== -1) {
+                return dataUrl.substring(commaIndex + 1);
+            }
+            return dataUrl;
+        }
+
         async function sendFileAnalysis(prompt, config) {
             const loadingId = showTypingIndicator();
             
             try {
+                const cleanBase64 = stripBase64Prefix(uploadedFileBase64);
+                
                 let body;
                 if (config.fileUpload === 'image') {
                     body = {
-                        imageBase64: uploadedFileBase64,
+                        imageBase64: cleanBase64,
                         prompt: prompt || 'Describe this image in detail.'
                     };
                 } else {
                     body = {
-                        fileBase64: uploadedFileBase64,
+                        fileBase64: cleanBase64,
                         prompt: prompt || 'Summarize this document and extract key insights.'
                     };
                 }
@@ -866,11 +908,17 @@
                 removeTypingIndicator(loadingId);
 
                 if (data.success) {
-                    addMessage(data.content, 'assistant');
+                    const content = data.content || 'Analysis complete.';
+                    addMessage(content, 'assistant');
                     updateChatTitle(prompt || config.name + ' Analysis');
-                    speakText(data.content);
+                    saveToHistory(prompt, content, config.fileUpload === 'image' ? 'vision' : 'document');
+                    speakText(content);
                 } else {
-                    addMessage('Error: ' + (data.error || 'Failed to analyze'), 'error');
+                    let errorMsg = data.error || 'Failed to analyze';
+                    if (errorMsg.includes('not configured') || errorMsg.includes('GEMINI_API_KEY') || errorMsg.includes('GOOGLE_AI_KEY')) {
+                        errorMsg = '⚠️ Vision feature requires Gemini API key.\n\nTo enable:\n1. Get key from aistudio.google.com/app/apikey\n2. Set: export GEMINI_API_KEY=your-key\n3. Restart the app';
+                    }
+                    addMessage(errorMsg, 'error');
                 }
             } catch (error) {
                 removeTypingIndicator(loadingId);
@@ -954,23 +1002,28 @@
 
                 if (data.success) {
                     const mode = modeSelect.value;
-                    let content = data.message;
-                    let spokenContent = data.message;
+                    let content = data.message || '';
+                    let spokenContent = data.message || '';
+                    let preFormatted = false;
                     
-                    if (mode === 'code' && data.codeBlocks) {
+                    if (mode === 'code') {
+                        // CodeResponse has explanation and codeBlocks, not message
                         content = formatCodeResponse(data);
                         spokenContent = data.explanation || 'Here is the code you requested.';
+                        preFormatted = true;
                     } else if (mode === 'json' && data.data) {
                         content = formatJsonResponse(data.data);
                         spokenContent = 'Here is the generated JSON data.';
+                        preFormatted = true;
                     } else if (data.data && Array.isArray(data.data)) {
                         content = formatFunctionCallResponse(data.data);
                         spokenContent = 'Function calls have been processed.';
+                        preFormatted = true;
                     }
                     
-                    addMessage(content, 'assistant');
+                    addMessage(content, 'assistant', false, preFormatted);
                     updateChatTitle(message);
-                    saveToHistory(message, content, mode);
+                    saveToHistory(message, spokenContent || content, mode);
                     speakText(spokenContent);
                 } else {
                     addMessage(data.error || 'An error occurred', 'error');
@@ -984,12 +1037,22 @@
         function formatCodeResponse(data) {
             let html = '';
             if (data.explanation) {
-                html += `<p class="mb-4 text-gray-300">${escapeHtml(data.explanation)}</p>`;
+                html += `<div class="mb-4 text-gray-300">${formatMessage(data.explanation)}</div>`;
             }
-            if (data.codeBlocks) {
+            if (data.codeBlocks && data.codeBlocks.length > 0) {
                 data.codeBlocks.forEach(block => {
-                    html += `<pre class="rounded-xl overflow-hidden"><code class="language-${block.language}">${escapeHtml(block.code)}</code></pre>`;
+                    const id = `code-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    const lang = block.language || 'plaintext';
+                    html += `<pre class="rounded-xl overflow-hidden my-3 relative group/code">
+                        <button onclick="copyCode('${id}')" class="code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs bg-white/10 hover:bg-white/20 text-gray-300 rounded-md transition-all flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Copy
+                        </button>
+                        <code id="${id}" class="language-${lang}">${escapeHtml(block.code)}</code>
+                    </pre>`;
                 });
+            } else if (!data.explanation) {
+                html = '<p class="text-gray-400">No code generated. Please try a more specific request.</p>';
             }
             return html;
         }
@@ -1054,48 +1117,48 @@
             }
         }
 
-        function addMessage(content, type, isStreaming = false) {
+        function addMessage(content, type, isStreaming = false, preFormatted = false) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex gap-3 md:gap-4 message-enter group';
+            messageDiv.className = 'flex gap-2 sm:gap-3 md:gap-4 message-enter group chat-container max-w-4xl lg:max-w-5xl mx-auto';
             
             const isUser = type === 'user';
             const isError = type === 'error';
             const messageId = 'msg-' + Date.now();
             
             const avatar = isUser 
-                ? `<div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
-                    <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ? `<div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                    </div>`
-                : `<div class="w-8 h-8 md:w-10 md:h-10 rounded-xl ${isError ? 'bg-gradient-to-br from-red-500 to-rose-500' : 'bg-gradient-to-br from-primary-500 to-accent-500'} flex items-center justify-center flex-shrink-0 shadow-lg ${isError ? 'shadow-red-500/20' : 'shadow-primary-500/20'}">
-                    <span class="text-sm md:text-base">${isError ? '⚠️' : '✦'}</span>
+                : `<div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg sm:rounded-xl ${isError ? 'bg-gradient-to-br from-red-500 to-rose-500' : 'bg-gradient-to-br from-primary-500 to-accent-500'} flex items-center justify-center flex-shrink-0 shadow-lg ${isError ? 'shadow-red-500/20' : 'shadow-primary-500/20'}">
+                    <span class="text-xs sm:text-sm md:text-base">${isError ? '⚠️' : '✦'}</span>
                    </div>`;
 
-            const formattedContent = isUser ? escapeHtml(content) : (isStreaming ? '' : formatMessage(content));
+            const formattedContent = isUser ? escapeHtml(content) : (isStreaming ? '' : (preFormatted ? content : formatMessage(content)));
             
             // Copy button for assistant messages
             const copyButton = (!isUser && !isError) ? `
-                <div class="flex items-center gap-1 mt-3 pt-3 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onclick="copyMessage('${messageId}')" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Copy response">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center gap-1 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="copyMessage('${messageId}')" class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Copy response">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                         </svg>
-                        <span>Copy</span>
+                        <span class="hidden sm:inline">Copy</span>
                     </button>
-                    <button onclick="speakMessage('${messageId}')" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Read aloud">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="speakMessage('${messageId}')" class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all" title="Read aloud">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
                         </svg>
-                        <span>Read</span>
+                        <span class="hidden sm:inline">Read</span>
                     </button>
                 </div>
             ` : '';
 
             messageDiv.innerHTML = `
                 ${avatar}
-                <div class="flex-1 glass-card rounded-2xl px-4 py-3 md:px-5 md:py-4 overflow-hidden ${isError ? 'border-red-500/30' : ''} ${isUser ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20' : ''}">
-                    <div id="${messageId}" class="message-content prose prose-invert max-w-none text-sm md:text-base text-gray-200" data-raw="${isUser ? '' : escapeHtml(content)}">${formattedContent}</div>
+                <div class="flex-1 glass-card rounded-xl sm:rounded-2xl px-3 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4 overflow-hidden ${isError ? 'border-red-500/30' : ''} ${isUser ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20' : ''}">
+                    <div id="${messageId}" class="message-content prose prose-invert max-w-none text-xs sm:text-sm md:text-base text-gray-200" data-raw="${isUser ? '' : escapeHtml(content)}">${formattedContent}</div>
                     ${copyButton}
                 </div>
             `;
