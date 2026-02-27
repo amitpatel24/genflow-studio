@@ -13,28 +13,45 @@ import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
 
 /**
- * Configuration for WebClient used to communicate with Groq API.
+ * Configuration for WebClients used to communicate with AI APIs.
+ * - Groq: Text chat (fast inference)
+ * - Google AI: Vision and Document analysis (multimodal)
  */
 @Configuration
-@EnableConfigurationProperties(GroqConfig.class)
+@EnableConfigurationProperties({GroqConfig.class, GoogleAiConfig.class})
 public class WebClientConfig {
 
-    private final GroqConfig config;
+    private final GroqConfig groqConfig;
+    private final GoogleAiConfig googleAiConfig;
 
-    public WebClientConfig(GroqConfig config) {
-        this.config = config;
+    public WebClientConfig(GroqConfig groqConfig, GoogleAiConfig googleAiConfig) {
+        this.groqConfig = groqConfig;
+        this.googleAiConfig = googleAiConfig;
     }
 
     @Bean
     public WebClient groqWebClient() {
         HttpClient httpClient = HttpClient.create()
-            .responseTimeout(Duration.ofMillis(config.timeout().read()));
+            .responseTimeout(Duration.ofMillis(groqConfig.timeout().read()));
 
         return WebClient.builder()
-            .baseUrl(config.api().baseUrl())
+            .baseUrl(groqConfig.api().baseUrl())
             .clientConnector(new ReactorClientHttpConnector(httpClient))
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + config.api().key())
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + groqConfig.api().key())
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
+    }
+
+    @Bean
+    public WebClient googleAiWebClient() {
+        HttpClient httpClient = HttpClient.create()
+            .responseTimeout(Duration.ofMillis(googleAiConfig.timeout()));
+
+        return WebClient.builder()
+            .baseUrl(googleAiConfig.baseUrl())
+            .clientConnector(new ReactorClientHttpConnector(httpClient))
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)) // 16MB for large files
             .build();
     }
 

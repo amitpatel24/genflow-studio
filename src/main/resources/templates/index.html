@@ -344,6 +344,8 @@
                         <option value="chat" class="bg-gray-900">💬 Chat Assistant</option>
                         <option value="code" class="bg-gray-900">⌨️ Code Expert</option>
                         <option value="summarize" class="bg-gray-900">📄 Summarizer</option>
+                        <option value="vision" class="bg-gray-900">👁️ Vision Analysis</option>
+                        <option value="document" class="bg-gray-900">📑 Document Analysis</option>
                         <option value="enhance-image" class="bg-gray-900">🎨 Image Prompt</option>
                         <option value="json" class="bg-gray-900">📊 JSON Generator</option>
                         <option value="function" class="bg-gray-900">⚡ Function Calls</option>
@@ -414,8 +416,8 @@
             <div class="p-4 border-t border-white/5">
                 <div class="flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span class="text-gray-500">Groq API</span>
+                        <div id="providerStatusDot" class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span id="providerNameFooter" class="text-gray-500">Groq API</span>
                     </div>
                     <span id="rateLimitInfo" class="text-gray-600">30 req/min</span>
                 </div>
@@ -464,7 +466,7 @@
                         <span class="gradient-text">Welcome to GenFlow</span>
                     </h3>
                     <p class="text-gray-400 max-w-md mb-8 text-sm md:text-base">
-                        Experience the future of AI. Lightning-fast responses powered by Groq's revolutionary LPU technology.
+                        Experience the future of AI. Choose between Groq's ultra-fast LPU or Google's powerful Gemini models.
                     </p>
                     
                     <!-- Mode Cards -->
@@ -493,12 +495,20 @@
                             <p class="text-xs text-gray-500 hidden md:block">Condense text</p>
                         </button>
                         
-                        <button onclick="selectModeAndExample('enhance-image', 'A cozy coffee shop on a rainy day')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">🎨</span>
+                        <button onclick="selectMode('vision')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group border border-primary-500/30">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">👁️</span>
                             </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Image Prompt</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Enhance for AI art</p>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Vision</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Analyze images</p>
+                        </button>
+                        
+                        <button onclick="selectMode('document')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group border border-primary-500/30">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <span class="text-xl md:text-2xl">📑</span>
+                            </div>
+                            <p class="text-sm md:text-base font-medium text-white mb-1">Document</p>
+                            <p class="text-xs text-gray-500 hidden md:block">Analyze PDFs</p>
                         </button>
                         
                         <button onclick="selectModeAndExample('json', 'Generate a product catalog for an electronics store')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
@@ -507,14 +517,6 @@
                             </div>
                             <p class="text-sm md:text-base font-medium text-white mb-1">JSON</p>
                             <p class="text-xs text-gray-500 hidden md:block">Structured data</p>
-                        </button>
-                        
-                        <button onclick="selectModeAndExample('function', 'What is the weather in Paris right now?')" class="mode-card glass-card rounded-2xl p-4 md:p-5 text-left group">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-yellow-500/20 to-lime-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <span class="text-xl md:text-2xl">⚡</span>
-                            </div>
-                            <p class="text-sm md:text-base font-medium text-white mb-1">Functions</p>
-                            <p class="text-xs text-gray-500 hidden md:block">Tool calling</p>
                         </button>
                     </div>
                     
@@ -529,6 +531,31 @@
 
             <!-- Input Area - Claude Style -->
             <div class="p-4 md:p-6 pt-2">
+                <!-- File Upload Area (for Vision/Document modes) -->
+                <div id="fileUploadArea" class="hidden max-w-4xl mx-auto mb-3">
+                    <div class="glass-card rounded-xl p-4 border-dashed border-2 border-gray-600 hover:border-primary-500 transition-colors">
+                        <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
+                        <label for="fileInput" class="flex flex-col items-center cursor-pointer">
+                            <svg id="uploadIcon" class="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span id="uploadLabel" class="text-sm text-gray-300 font-medium">Upload Image</span>
+                            <span class="text-xs text-gray-500 mt-1">Max 10MB</span>
+                        </label>
+                    </div>
+                    <!-- File Preview -->
+                    <div id="filePreview" class="hidden mt-3 glass-card rounded-xl p-3">
+                        <div class="flex items-center gap-3">
+                            <div id="previewContent" class="flex items-center gap-3 flex-1 min-w-0"></div>
+                            <button onclick="removeFile()" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <form id="chatForm" onsubmit="sendMessage(event)" class="relative max-w-4xl mx-auto">
                     <div class="relative bg-[#2a2a3a] rounded-2xl border border-white/10 focus-within:border-primary-500/50 transition-colors shadow-lg">
                         <textarea 
@@ -592,15 +619,21 @@
         const sessionDisplay = document.getElementById('sessionDisplay');
         const modeBadge = document.getElementById('modeBadge');
 
-        // Mode configurations
+        // Mode configurations - Groq for text, Gemini for vision/document
         const modeConfig = {
-            'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', streaming: true, placeholder: 'Ask me anything...' },
-            'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe your code needs...' },
-            'summarize': { name: 'Summarize', endpoint: '/api/summarize', model: 'Mixtral 8x7B', streaming: false, placeholder: 'Paste text to summarize...' },
-            'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', streaming: false, placeholder: 'Describe your image idea...' },
-            'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Describe the data structure...' },
-            'function': { name: 'Functions', endpoint: '/api/function', model: 'Llama 3.3 70B', streaming: false, placeholder: 'Ask something actionable...' }
+            'chat': { name: 'Chat', endpoint: '/api/chat', model: 'Llama 3.3 70B', provider: 'groq', streaming: true, placeholder: 'Ask me anything...', fileUpload: false },
+            'code': { name: 'Code', endpoint: '/api/code', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Describe your code needs...', fileUpload: false },
+            'summarize': { name: 'Summarize', endpoint: '/api/summarize', model: 'Mixtral 8x7B', provider: 'groq', streaming: false, placeholder: 'Paste text to summarize...', fileUpload: false },
+            'vision': { name: 'Vision', endpoint: '/api/vision', model: 'Gemini 1.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Describe what to analyze in the image...', fileUpload: 'image', accept: 'image/*' },
+            'document': { name: 'Document', endpoint: '/api/document', model: 'Gemini 1.5 Flash', provider: 'gemini', streaming: false, placeholder: 'Ask about the document...', fileUpload: 'pdf', accept: '.pdf' },
+            'enhance-image': { name: 'Image Prompt', endpoint: '/api/enhance-image', model: 'Llama 3.1 8B', provider: 'groq', streaming: false, placeholder: 'Describe your image idea...', fileUpload: false },
+            'json': { name: 'JSON', endpoint: '/api/json', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Describe the data structure...', fileUpload: false },
+            'function': { name: 'Functions', endpoint: '/api/function', model: 'Llama 3.3 70B', provider: 'groq', streaming: false, placeholder: 'Ask something actionable...', fileUpload: false }
         };
+        
+        // File upload state
+        let uploadedFile = null;
+        let uploadedFileBase64 = null;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -631,6 +664,31 @@
             document.getElementById('chatModelName').textContent = config.model;
             modeBadge.textContent = config.name;
             messageInput.placeholder = config.placeholder;
+            
+            // Update provider indicator in footer
+            const providerNameFooter = document.getElementById('providerNameFooter');
+            const rateLimitInfo = document.getElementById('rateLimitInfo');
+            if (config.provider === 'gemini') {
+                providerNameFooter.textContent = 'Gemini API';
+                rateLimitInfo.textContent = 'Vision/Doc';
+            } else {
+                providerNameFooter.textContent = 'Groq API';
+                rateLimitInfo.textContent = '30 req/min';
+            }
+            
+            // Show/hide file upload area
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            if (config.fileUpload) {
+                fileUploadArea.classList.remove('hidden');
+                document.getElementById('fileInput').accept = config.accept || '*/*';
+                document.getElementById('uploadLabel').textContent = config.fileUpload === 'image' ? 'Upload Image' : 'Upload PDF';
+                document.getElementById('uploadIcon').innerHTML = config.fileUpload === 'image' 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>';
+            } else {
+                fileUploadArea.classList.add('hidden');
+                clearFileUpload();
+            }
         }
 
         function getHintForMode(mode) {
@@ -638,11 +696,76 @@
                 'chat': 'Multi-turn conversation with memory',
                 'code': 'Expert programming assistance',
                 'summarize': 'Condense long text concisely',
+                'vision': 'Analyze images with Gemini Vision',
+                'document': 'Extract insights from PDF documents',
                 'enhance-image': 'Create stunning image prompts',
                 'json': 'Generate structured JSON data',
                 'function': 'AI tool calling demo'
             };
             return hints[mode] || '';
+        }
+
+        function clearFileUpload() {
+            uploadedFile = null;
+            uploadedFileBase64 = null;
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) fileInput.value = '';
+            const filePreview = document.getElementById('filePreview');
+            if (filePreview) filePreview.classList.add('hidden');
+        }
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File too large. Maximum size is 10MB.');
+                event.target.value = '';
+                return;
+            }
+            
+            uploadedFile = file;
+            
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedFileBase64 = e.target.result;
+                showFilePreview(file);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showFilePreview(file) {
+            const previewDiv = document.getElementById('filePreview');
+            const previewContent = document.getElementById('previewContent');
+            
+            if (file.type.startsWith('image/')) {
+                previewContent.innerHTML = `
+                    <img src="${uploadedFileBase64}" class="max-h-32 rounded-lg" alt="Preview">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-white truncate">${file.name}</p>
+                        <p class="text-xs text-gray-400">${(file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                `;
+            } else {
+                previewContent.innerHTML = `
+                    <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-white truncate">${file.name}</p>
+                        <p class="text-xs text-gray-400">${(file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                `;
+            }
+            previewDiv.classList.remove('hidden');
+        }
+
+        function removeFile() {
+            clearFileUpload();
         }
 
         function selectModeAndExample(mode, example) {
@@ -653,26 +776,55 @@
             closeSidebarOnMobile();
         }
 
+        function selectMode(mode) {
+            modeSelect.value = mode;
+            updateModeHint();
+            closeSidebarOnMobile();
+            // Scroll to file upload if needed
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            if (fileUploadArea && !fileUploadArea.classList.contains('hidden')) {
+                fileUploadArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
         async function sendMessage(event) {
             event.preventDefault();
             
             const message = messageInput.value.trim();
-            if (!message || isLoading) return;
-
             const mode = modeSelect.value;
             const config = modeConfig[mode];
+            
+            // For vision/document modes, require file upload
+            if (config.fileUpload && !uploadedFileBase64) {
+                showToast('Please upload a file first');
+                return;
+            }
+            
+            // For text modes, require message
+            if (!config.fileUpload && !message) return;
+            if (isLoading) return;
+
             const useStreaming = config.streaming && streamToggle.checked;
             
             if (welcomeMessage) welcomeMessage.style.display = 'none';
 
-            addMessage(message, 'user');
+            // Show user message
+            if (config.fileUpload) {
+                const fileInfo = uploadedFile ? `[${uploadedFile.name}] ` : '';
+                addMessage(fileInfo + (message || config.placeholder), 'user');
+            } else {
+                addMessage(message, 'user');
+            }
+            
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
             setLoading(true);
 
             try {
-                if (useStreaming) {
+                if (config.fileUpload) {
+                    await sendFileAnalysis(message, config);
+                } else if (useStreaming) {
                     await sendStreamingMessage(message);
                 } else {
                     await sendStandardMessage(message, config.endpoint);
@@ -681,6 +833,48 @@
                 addMessage('Error: ' + error.message, 'error');
             } finally {
                 setLoading(false);
+                if (config.fileUpload) {
+                    clearFileUpload();
+                }
+            }
+        }
+
+        async function sendFileAnalysis(prompt, config) {
+            const loadingId = showTypingIndicator();
+            
+            try {
+                let body;
+                if (config.fileUpload === 'image') {
+                    body = {
+                        imageBase64: uploadedFileBase64,
+                        prompt: prompt || 'Describe this image in detail.'
+                    };
+                } else {
+                    body = {
+                        fileBase64: uploadedFileBase64,
+                        prompt: prompt || 'Summarize this document and extract key insights.'
+                    };
+                }
+                
+                const response = await fetch(config.endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                removeTypingIndicator(loadingId);
+
+                if (data.success) {
+                    addMessage(data.content, 'assistant');
+                    updateChatTitle(prompt || config.name + ' Analysis');
+                    speakText(data.content);
+                } else {
+                    addMessage('Error: ' + (data.error || 'Failed to analyze'), 'error');
+                }
+            } catch (error) {
+                removeTypingIndicator(loadingId);
+                throw error;
             }
         }
 
@@ -688,6 +882,7 @@
             const streamingDiv = addMessage('', 'assistant', true);
             const contentDiv = streamingDiv.querySelector('.message-content');
             
+            // Always use Groq for streaming chat
             const url = `/api/chat/stream?message=${encodeURIComponent(message)}&sessionId=${sessionId || ''}`;
             
             try {

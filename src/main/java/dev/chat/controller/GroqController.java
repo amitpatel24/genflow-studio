@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 /**
- * REST Controller for all Groq AI endpoints.
+ * REST Controller for text-based AI endpoints using Groq.
+ * Vision and Document endpoints are handled by separate controllers.
  */
 @RestController
 @RequestMapping("/api")
@@ -34,10 +35,6 @@ public class GroqController {
     /**
      * Standard chat completion with conversation history.
      * POST /api/chat
-     * 
-     * curl -X POST http://localhost:8080/api/chat \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "Hello, how are you?", "sessionId": "optional-session-id"}'
      */
     @PostMapping("/chat")
     public ResponseEntity<AiResponse> chat(@RequestBody AiRequest request) {
@@ -54,8 +51,6 @@ public class GroqController {
     /**
      * Streaming chat with Server-Sent Events.
      * GET /api/chat/stream?message=Hello&sessionId=xxx
-     * 
-     * curl -N "http://localhost:8080/api/chat/stream?message=Tell%20me%20a%20joke"
      */
     @GetMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> streamChat(
@@ -81,10 +76,6 @@ public class GroqController {
     /**
      * Summarize text.
      * POST /api/summarize
-     * 
-     * curl -X POST http://localhost:8080/api/summarize \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "Long text to summarize..."}'
      */
     @PostMapping("/summarize")
     public ResponseEntity<AiResponse> summarize(@RequestBody AiRequest request) {
@@ -108,10 +99,6 @@ public class GroqController {
     /**
      * Code assistant for programming help.
      * POST /api/code
-     * 
-     * curl -X POST http://localhost:8080/api/code \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "Write a Python function to sort a list"}'
      */
     @PostMapping("/code")
     public ResponseEntity<CodeResponse> codeAssistant(@RequestBody AiRequest request) {
@@ -130,10 +117,6 @@ public class GroqController {
     /**
      * Enhance prompts for image generation.
      * POST /api/enhance-image
-     * 
-     * curl -X POST http://localhost:8080/api/enhance-image \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "a cat sitting on a windowsill"}'
      */
     @PostMapping("/enhance-image")
     public ResponseEntity<AiResponse> enhanceImagePrompt(@RequestBody AiRequest request) {
@@ -152,10 +135,6 @@ public class GroqController {
     /**
      * Generate structured JSON output.
      * POST /api/json
-     * 
-     * curl -X POST http://localhost:8080/api/json \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "Generate a user profile for John Doe, age 30, developer", "jsonSchema": "{\"type\": \"object\"}"}'
      */
     @PostMapping("/json")
     public ResponseEntity<AiResponse> generateJson(@RequestBody AiRequest request) {
@@ -174,10 +153,6 @@ public class GroqController {
     /**
      * Function calling demonstration.
      * POST /api/function
-     * 
-     * curl -X POST http://localhost:8080/api/function \
-     *   -H "Content-Type: application/json" \
-     *   -d '{"message": "What is the weather in Tokyo?"}'
      */
     @PostMapping("/function")
     public ResponseEntity<AiResponse> functionCalling(@RequestBody AiRequest request) {
@@ -216,7 +191,7 @@ public class GroqController {
     // ==================== MODELS ====================
 
     /**
-     * Get available models.
+     * Get available Groq models.
      * GET /api/models
      */
     @GetMapping("/models")
